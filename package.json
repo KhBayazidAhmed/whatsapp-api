@@ -1,0 +1,21 @@
+{
+  "name": "mahmmadali-whatsapp-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w & nodemon dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "whatsapp-web.js": "^1.21.0"
+  }
+}
