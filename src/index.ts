@@ -5,7 +5,7 @@ import { processTheInComingMessage } from "./controller/processTheInComingMessag
 // Initialize the client
 const client = new Client({
   puppeteer: { headless: true },
-  authStrategy: new LocalAuth({ clientId: "client-one-new" }),
+  authStrategy: new LocalAuth({ clientId: "client-two" }),
 });
 
 // Event: Authentication Successful
@@ -24,12 +24,7 @@ client.once("auth_failure", (msg) => {
 client.once("ready", () => {
   console.log("[Client] Ready for action!");
 });
-
-// Listen for incoming messages
-client.on("message", async (message) => {
-  console.log("Received message:", message.body);
-});
-
+processTheInComingMessage(client);
 // Initialize the client
 console.log("Initializing Client...");
 client.initialize();
