@@ -1,0 +1,370 @@
+@font-face {
+  font-family: "Bangla";
+  src: url(./assets/fonts/Bangla.ttf) format("truetype");
+}
+@font-face {
+  font-family: "arial";
+  src: url(./assets/fonts/ARIAL.TTF) format("truetype");
+}
+/* @page {
+  size: A4;
+  margin: 0;
+} */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Bangla", "arial";
+}
+
+.main_container {
+  margin-top: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.nid_front {
+  width: 323.5px;
+  height: 205px;
+  border: 1.5px solid black;
+}
+.nid_front_header {
+  margin-top: 2px;
+  height: 60px;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.nid_front_header_logo img {
+  width: 38px;
+  height: 38px;
+  margin-top: -8px;
+  /* margin-left: -3px; */
+}
+.nid_front_header_text_container {
+  margin-left: 6px;
+}
+.nid_front_header_text_container h1 {
+  font-size: 20px;
+  font-family: "Bangla", "arial";
+  letter-spacing: 0;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: #212529;
+}
+.nid_front_header_text_container h3 {
+  font-size: 11.46px;
+  font-family: "arial";
+  line-height: 0.75rem;
+  color: #167f1a;
+  letter-spacing: 0;
+  margin-bottom: -2.2px;
+}
+.nid_front_header_button_text_english {
+  color: #ff121b;
+  font-size: 10px;
+  font-family: "arial";
+  line-height: 1rem;
+  font-weight: 500;
+}
+.nid_front_header_button_text_slash {
+  font-size: 13px;
+  font-family: arial;
+}
+.nid_front_header_button_text_bangla {
+  color: #212529;
+  font-size: 13px;
+  font-family: "bangla", "arial";
+  line-height: 1rem;
+  font-weight: 500;
+}
+.nid_front_header_text_right span {
+  color: #212529;
+  font-size: 13px;
+  font-family: arial;
+}
+.nid_front_body {
+  position: relative;
+}
+.nid_front_body_divider {
+  width: 321px;
+  margin-left: -1px;
+  border-top: 1.5px solid black;
+}
+.flower_image_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+  margin-left: 10px;
+  z-index: -1;
+}
+.flower_image_container img {
+  width: 114px;
+  height: 114px;
+  background: transparent;
+}
+.nid_front_body_content {
+  padding-top: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#userPhoto {
+  width: 68.2px;
+  height: 78px;
+}
+.nid_front_body_content_img {
+  padding-left: 2px;
+}
+.nid_front_body_content_img_signature {
+  width: 68.2px;
+  height: 38.5px;
+}
+#userSign {
+  width: 100%;
+  max-height: 100%;
+}
+.nid_front_body_content_details {
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 3px;
+}
+.nid_front_body_content_details_name_bangla {
+  /* margin-top: 5px; */
+  display: flex;
+  align-items: center;
+}
+#bangla_name_container {
+  padding-left: 22px;
+  width: 200px;
+}
+#nameBangla {
+  color: #212529;
+  font-weight: 400;
+  -webkit-text-stroke: 0.4px black;
+  -webkit-text-size-adjust: 100%;
+}
+.nid_front_body_content_details_name_english {
+  margin-top: -7px;
+  display: flex;
+  align-items: center;
+}
+.nid_front_body_content_details_name_english span {
+  font-family: "arial";
+  font-size: 10px;
+  line-height: 0.75rem;
+}
+
+#english_name_container {
+  width: 198px;
+  margin-left: 13px;
+}
+#nameEnglish {
+  font-family: arial;
+  font-size: 12.73px;
+  color: #212529;
+  font-weight: 400;
+}
+.nid_front_body_content_details_father_name {
+  margin-top: -10px;
+}
+.nid_front_body_content_details_father_name span {
+  font-family: "bangla";
+  font-size: 14px;
+  line-height: 0.75rem;
+}
+#fatherName {
+  padding-left: 13px;
+  color: #212529;
+  font-weight: 400;
+  line-height: 0.75rem;
+}
+.nid_front_body_content_details_mother_name {
+  margin-top: -10px;
+}
+.nid_front_body_content_details_mother_name span {
+  font-family: "bangla";
+  font-size: 14px;
+  line-height: 0.75rem;
+}
+#motherName {
+  padding-left: 14px;
+  color: #212529;
+  font-weight: 400;
+  line-height: 0.75rem;
+}
+.nid_front_body_content_details_dob {
+  margin-top: -9px;
+  font-size: 12px;
+  line-height: 1rem;
+  font-family: bangla, arial;
+}
+#dateOfBirth {
+  color: #ff0000;
+}
+.nid_front_body_content_details_id_no {
+  margin-top: -8px;
+  font-size: 12px;
+  line-height: 1rem;
+  font-family: arial;
+}
+#nidNumber {
+  font-family: arial;
+  color: #ff0000;
+  font-weight: bold;
+  letter-spacing: 1px;
+  -webkit-text-stroke: 0.4px #ff0000;
+}
+.nid_back {
+  width: 323.5px;
+  height: 205px;
+  border: 1.5px solid black;
+}
+.nid_back_header {
+  border-bottom: 1.5px solid black;
+}
+.nid_back_header h3 {
+  font-family: "bangla";
+  font-size: 11.33px;
+  line-height: 13px;
+  letter-spacing: 0.05px;
+  height: 32px;
+  font-weight: 400;
+  padding: 0 0.5rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+.nid_back_body {
+  font-family: "bangla";
+  font-size: 11.33px;
+  line-height: 13px;
+  letter-spacing: 0.05px;
+  font-weight: 400;
+  padding-top: 2px;
+  text-align: left;
+  height: 66px;
+  border-bottom: 1.5px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.nid_back_body_address {
+  width: 100%;
+  padding-left: 0.5rem;
+  padding-right: 2px;
+  display: flex;
+}
+#address {
+  font-family: "bangla";
+  font-size: 11.33px;
+  line-height: 13px;
+  letter-spacing: 0.05px;
+  font-weight: 400;
+  text-align: left;
+  padding-left: 2px;
+}
+
+.nid_back_body_bottom_container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: -1px;
+  height: 14px;
+}
+.nid_back_body_bottom {
+  display: flex;
+  padding: 0 0.3rem;
+  gap: 1rem;
+  align-items: baseline;
+}
+.nid_back_body_blood_group_slash {
+  font-size: 11px;
+  font-family: arial;
+}
+.nid_back_body_blood_group_text {
+  font-size: 9px;
+}
+#bloodGroup {
+  color: #ff0000;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  -webkit-text-stroke: 0.4px #ff0000;
+  font-size: 9.33px;
+  margin: 0 0.25rem;
+}
+.nid_back_body_birth_place {
+  font-size: 10.66px;
+}
+.nid_back_body_marital_status {
+  background-color: #000;
+  color: white;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  margin-right: -1px;
+}
+
+@media print {
+  .nid_back_body_marital_status {
+    background-color: #000 !important;
+    color: white !important;
+  }
+}
+@media print {
+  /* Hide browser-added page details */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Ensure no unwanted space or content */
+  .header,
+  .footer,
+  .time-details,
+  .unwanted-class {
+    display: none !important;
+  }
+
+  /* Adjust to A4 size if needed */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+.nid_back_footer_container {
+  padding: 0.25rem 0.5rem;
+}
+.nid_back_footer img {
+  width: 78px;
+  height: 27.3px;
+  margin-left: 18px;
+}
+.nid_back_footer_text {
+  font-family: "bangla";
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: -5px;
+  align-items: center;
+}
+.nid_back_footer_date {
+  font-family: "bangla";
+  font-size: 12px;
+  padding-right: 1.5rem;
+}
+
+#canvas_barcode {
+  width: 314px;
+  height: 39px;
+  margin-top: 5px;
+  margin-left: -3px;
+}

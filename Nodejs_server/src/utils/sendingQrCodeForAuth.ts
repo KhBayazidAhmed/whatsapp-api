@@ -1,5 +1,6 @@
-import { Client, LocalAuth, MessageMedia } from "whatsapp-web.js";
-import generateQRCode from "./qrGenerate";
+import pkg from "whatsapp-web.js";
+const { Client, LocalAuth, MessageMedia } = pkg;
+import generateQRCode from "./qrGenerate.js";
 
 // Initialize the QR Sender Client
 const qrSenderClient = new Client({
@@ -36,10 +37,10 @@ qrSenderClient.once("authenticated", () => {
 });
 
 // Function to Attach QR Code Listener
-function sendingQrCodeForAuth(client: Client) {
+function sendingQrCodeForAuth(client: any) {
   // Initialize the QR Sender Client
   qrSenderClient.initialize();
-  client.on("qr", async (qr) => {
+  client.on("qr", async (qr: string) => {
     console.log("[Client] QR code received for authentication.");
     try {
       const qrImage = await generateQRCode(qr); // Generate the QR code as an image

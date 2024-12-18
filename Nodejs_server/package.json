@@ -2,6 +2,7 @@
   "name": "mahmmadali-whatsapp-api",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w & nodemon dist/index.js"
@@ -15,7 +16,9 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "pdfjs-dist": "^4.9.155",
     "qrcode": "^1.5.4",
+    "sharp": "^0.33.5",
     "whatsapp-web.js": "^1.26.0"
   }
 }

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",           // Use ESNext for modules
+    "target": "ESNext",           // Use ESNext for latest JavaScript features
+    "moduleResolution": "node",   // Resolve modules like Node.js
+    "esModuleInterop": true,      // Allow default import from non-ES modules
+    "skipLibCheck": true,         // Skip library checks for faster compilation
+    "forceConsistentCasingInFileNames": true, // Enforce consistent casing in file names
+    "outDir": "./dist",           // Output directory for compiled files
+    "rootDir": "./src",           // Root directory for source files
+    "resolveJsonModule": true     // Allow importing JSON files
+  },
+  "include": ["src/**/*"]          // Include all source files in the "src" folder
+}

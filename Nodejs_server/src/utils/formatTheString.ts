@@ -18,8 +18,8 @@ type Address = {
 
 export type ParsedData = {
   citizen: string | null;
-  nationalId: string | null;
-  pin: string | null;
+  nationalId: string;
+  pin: string;
   status: string | null;
   afisStatus: string | null;
   lockFlag: string | null;
@@ -27,14 +27,14 @@ export type ParsedData = {
   formNo: string | null;
   slNo: string | null;
   tag: string | null;
-  nameBangla: string | null;
-  nameEnglish: string | null;
-  dateOfBirth: string | null;
-  birthPlace: string | null;
+  nameBangla: string;
+  nameEnglish: string;
+  dateOfBirth: string;
+  birthPlace: string;
   birthOther: string | null;
   birthRegistration: string | null;
-  fatherName: string | null;
-  motherName: string | null;
+  fatherName: string;
+  motherName: string;
   spouseName: string | null;
   gender: string | null;
   marital: string | null;
@@ -45,7 +45,7 @@ export type ParsedData = {
   permanentAddress: Address;
   education: string | null;
   identification: string | null;
-  bloodGroup: string | null;
+  bloodGroup: string | undefined;
   tin: string | null;
   driving: string | null;
   passport: string | null;
@@ -82,7 +82,18 @@ function formatTheString(data: string): ParsedData {
       .trim() // Remove leading/trailing spaces
       .replaceAll("\n", " "); // Replace newlines with spaces
   };
-
+  const extractDataForNid = (
+    start: string,
+    end: string,
+    sliceFrom = 0
+  ): string => {
+    const startIndex = string.indexOf(start, sliceFrom); // Find the start index
+    const endIndex = string.indexOf(end, startIndex); // Find the end index
+    return string
+      .slice(startIndex + start.length, endIndex) // Extract data between start and end
+      .trim() // Remove leading/trailing spaces
+      .replaceAll("\n", " "); // Replace newlines with spaces
+  };
   // Parse Address fields (handles both Present and Permanent Address)
   const parsePresentAddress = (): Address => {
     return {
@@ -148,8 +159,8 @@ function formatTheString(data: string): ParsedData {
   };
   return {
     citizen: extractData("Citizen", "National ID"),
-    nationalId: extractData("National ID", "Pin"),
-    pin: extractData("Pin", "Status"),
+    nationalId: extractDataForNid("National ID", "Pin"),
+    pin: extractDataForNid("Pin", "Status"),
     status: extractData("Status", "Afis Status"),
     afisStatus: extractData("Afis Status", "Lock Flag"),
     lockFlag: extractData("Lock Flag", "Voter No"),
@@ -157,14 +168,14 @@ function formatTheString(data: string): ParsedData {
     formNo: extractData("Form No", "Sl No"),
     slNo: extractData("Sl No", "Tag"),
     tag: extractData("Tag", "Name(Bangla)"),
-    nameBangla: extractData("Name(Bangla)", "Name(English)"),
-    nameEnglish: extractData("Name(English)", "Date of Birth"),
-    dateOfBirth: extractData("Date of Birth", "Birth Place"),
-    birthPlace: extractData("Birth Place", "Birth Other"),
+    nameBangla: extractDataForNid("Name(Bangla)", "Name(English)"),
+    nameEnglish: extractDataForNid("Name(English)", "Date of Birth"),
+    dateOfBirth: getDateFormat(extractData("Date of Birth", "Birth Place")),
+    birthPlace: extractDataForNid("Birth Place", "Birth Other"),
     birthOther: extractData("Birth Other", "Birth Registration"),
     birthRegistration: extractData("Birth Registration\nNo", "Father Name"),
-    fatherName: extractData("Father Name", "Mother Name"),
-    motherName: extractData("Mother Name", "Spouse Name"),
+    fatherName: extractDataForNid("Father Name", "Mother Name"),
+    motherName: extractDataForNid("Mother Name", "Spouse Name"),
     spouseName: extractData("Spouse Name", "Gender"),
     gender: extractData("Gender", "Marital"),
     marital: extractData("Marital", "Occupation"),
@@ -180,7 +191,7 @@ function formatTheString(data: string): ParsedData {
       extractData("Education", "Education Other")?.split("Smart Card")[0] ||
       extractData("Education", "Education Other"),
     identification: extractData("Identification", "Blood Group"),
-    bloodGroup: extractData("Blood Group", "TIN"),
+    bloodGroup: extractData("Blood Group", "TIN") || undefined,
     tin: extractData("TIN", "Driving"),
     driving: extractData("Driving", "Passport"),
     passport: extractData("Passport", "Laptop ID"),
@@ -201,5 +212,14 @@ function formatTheString(data: string): ParsedData {
     // Special case: Extract voterAt using regex as a fallback
     voterAt: data.match(/Voter At\n(.*)/)?.[1] || "",
   };
+}
+
+function getDateFormat(dateString: string | null): string {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, "0"); // Ensure 2-digit day
+  const month = date.toLocaleString("default", { month: "short" }); // Abbreviated month
+  const year = date.getFullYear();
+  return `${day} ${month} ${year}`;
 }
 export default formatTheString;

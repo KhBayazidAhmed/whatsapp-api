@@ -1,10 +1,12 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
-import sendingQrCodeForAuth from "./utils/sendingQrCodeForAuth";
-import { processTheInComingMessage } from "./controller/processTheInComingMessage";
+import pkg from "whatsapp-web.js";
+const { Client, LocalAuth } = pkg;
+
+import sendingQrCodeForAuth from "./utils/sendingQrCodeForAuth.js";
+import { processTheInComingMessage } from "./controller/processTheInComingMessage.js";
 
 // Initialize the client
 const client = new Client({
-  puppeteer: { headless: true },
+  puppeteer: { headless: false },
   authStrategy: new LocalAuth({ clientId: "client-two" }),
 });
 
@@ -24,7 +26,9 @@ client.once("auth_failure", (msg) => {
 client.once("ready", () => {
   console.log("[Client] Ready for action!");
 });
+
 processTheInComingMessage(client);
+
 // Initialize the client
 console.log("Initializing Client...");
 client.initialize();
