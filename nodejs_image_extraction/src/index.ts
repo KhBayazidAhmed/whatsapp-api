@@ -6,11 +6,10 @@ const port = 3000;
 
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "10mb" }));
-
+console.log("Server started");
 // Route to handle image extraction
 app.post("/extract-images", async (req: Request, res: Response) => {
   const { pdfBase64 } = req.body;
-
   if (!pdfBase64) {
     return res.status(400).json({
       message: "No PDF base64 provided",
