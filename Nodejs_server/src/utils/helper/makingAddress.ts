@@ -31,7 +31,11 @@ function convertToBengaliNumbers(number: string | undefined): string {
 function getAddressString(address: Address): string {
   // Convert home or holding information, if available
   const houseHolding = address.homeHolding
-    ? `বাসা/হোল্ডিং: ${convertToBengaliNumbers(address.homeHolding)}, `
+    ? `${convertToBengaliNumbers(
+        address.homeHolding === "-"
+          ? " "
+          : "বাসা/হোল্ডিং: " + address.homeHolding + ","
+      )} `
     : "";
 
   // Handle village or road information
@@ -43,11 +47,11 @@ function getAddressString(address: Address): string {
     address.additionalMouzaMoholla?.trim() ||
     "";
 
-  const villageRoad =
+  let villageRoad =
     villageOrRoad && mouzaOrMoholla && villageOrRoad === mouzaOrMoholla
       ? villageOrRoad
       : [villageOrRoad, mouzaOrMoholla].filter(Boolean).join(", ");
-
+  villageRoad = villageRoad.replaceAll("-,", "");
   // Construct the post office and district address
   const postOfficeAddress = `${
     address.postOffice || ""

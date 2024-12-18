@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import extractAndSaveImages from "./lib/imageExtraction";
+import extractAndSaveImages from "./lib/imageExtraction.js";
 
 const app = express();
 const port = 3000;
@@ -12,7 +12,7 @@ app.post("/extract-images", async (req: Request, res: Response) => {
   const { pdfBase64 } = req.body;
 
   if (!pdfBase64) {
-    res.json({
+    return res.status(400).json({
       message: "No PDF base64 provided",
     });
   }
@@ -21,13 +21,17 @@ app.post("/extract-images", async (req: Request, res: Response) => {
     console.log("Base64 PDF received. Extracting images...");
     const pdfBuffer = Uint8Array.from(Buffer.from(pdfBase64, "base64"));
     const extractedImages = await extractAndSaveImages(pdfBuffer);
-    res.json({
+
+    return res.json({
       message: "Images extracted successfully",
       images: extractedImages,
     });
   } catch (error: any) {
     console.error("Error while extracting images:", error.message);
-    // res.status(500).json({ error: "Failed to extract images from PDF" });
+    return res.status(500).json({
+      error: "Failed to extract images from PDF",
+      details: error.message,
+    });
   }
 });
 

@@ -6,7 +6,7 @@ import { processTheInComingMessage } from "./controller/processTheInComingMessag
 
 // Initialize the client
 const client = new Client({
-  puppeteer: { headless: false },
+  puppeteer: { headless: true },
   authStrategy: new LocalAuth({ clientId: "client-two" }),
 });
 

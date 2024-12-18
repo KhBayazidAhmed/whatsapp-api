@@ -39,14 +39,18 @@ export function processTheInComingMessage(client: Client) {
           if (!formattedText.nationalId) {
             await msg.reply("No National ID found in the document");
           }
-
+          // await msg.reply(JSON.stringify(formattedText, null, 2));
           const pdf = await generatePDF(formattedText, client, media);
           const mediaNid = new MessageMedia(
             "application/pdf",
             pdf,
             `nid-${formattedText.nationalId}.pdf`
           );
-          await msg.reply(mediaNid);
+          // await msg.reply("----Testing purposes only---- ");
+          await msg.reply(mediaNid, undefined, {
+            caption: "----This is for testing purposes only.----",
+          });
+
           console.log("Reply sent with formatted text"); // Log that the reply has been sent
         } else {
           await msg.reply("This is not a PDF file");

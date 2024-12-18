@@ -113,14 +113,14 @@ export default async function generatePDF(
     // Convert the PDF buffer to base64
     const base64PDF = pdfBuffer.toString("base64");
 
-    console.log("Returning the base64 string.");
+    console.log("Returning the base64 string. ");
     // Return the base64 string
     return base64PDF;
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;
   } finally {
-    await page.close(); // Always close the page even if pdfPage is undefined
+    await page.close(); /// Always close the page even if pdfPage is undefined
   }
 }
 const getImageBase64 = (image: { base64: string; filename: string }) => {

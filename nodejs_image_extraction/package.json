@@ -1,25 +1,22 @@
 {
-  "name": "nodejs_image_extraction",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node-dev src/index.ts"
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^4.21.2",
     "pdfjs-dist": "^4.9.155",
     "sharp": "^0.33.5"
   },
-  "devDependencies": {
-    "@types/express": "^5.0.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.2"
-  }
+  "name": "nodejs_image_extraction",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+ "scripts": {
+  "start": "tsc && node dist/index.js",  
+  "dev": "tsc -w & nodemon dist/index.js" },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
