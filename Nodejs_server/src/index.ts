@@ -6,8 +6,13 @@ import { processTheInComingMessage } from "./controller/processTheInComingMessag
 
 // Initialize the client
 const client = new Client({
-  puppeteer: { headless: true },
-  authStrategy: new LocalAuth({ clientId: "client-two" }),
+  puppeteer: {
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  },
+  authStrategy: new LocalAuth({
+    clientId: "client-two",
+  }),
 });
 
 // Event: Authentication Successful
