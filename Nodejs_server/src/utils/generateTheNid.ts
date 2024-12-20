@@ -112,7 +112,9 @@ export default async function generatePDF(
       // fitTextToContainer("bangla_name_container", "nameBangla");
     }, userData);
 
-    const pdfBuffer: Buffer = await page.pdf();
+    const pdfBuffer: Buffer = await page.pdf({
+      omitBackground: true,
+    });
     return pdfBuffer.toString("base64");
   } catch (error) {
     console.error("Error generating PDF:", error);

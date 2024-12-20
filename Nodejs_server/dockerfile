@@ -4,8 +4,8 @@ FROM node:18-alpine AS builder
 # Set the working directory
 WORKDIR /app
 
-# Set environment variable to skip Chromium download
-ENV PUPPETEER_SKIP_DOWNLOAD=true
+# Set environment variable to skip Chromium download during build
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Copy package files and install dependencies
 COPY package*.json ./
@@ -18,35 +18,30 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production stage
-FROM node:18-alpine AS production
+FROM ubuntu:20.04 as production
 
-# Set environment variables to avoid prompts during installation
-ENV NODE_ENV=production
-ENV PUPPETEER_SKIP_DOWNLOAD=true
-
-# Install Chromium and required dependencies
+# Install Chromium dependencies and Chromium
 RUN apk add --no-cache \
-    chromium \
-    nss \
-    fontconfig \
-    freetype \
-    harfbuzz \
-    ttf-freefont
+    gconf libgbm libasound2 libcairo libgdk-pixbuf libatk libcups libdbus \
+    libexpat libfontconfig libgcc libgconf-2 libglib libgtk-3 libnspr \
+    libpango libx11 libxcb libxcomposite libxcursor libxdamage libxext \
+    libxi libxrandr libxrender libxss libxtst ca-certificates \
+    chromium nss
 
-# Set Chromium binary path for Puppeteer
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+# Set Puppeteer executable path to the locally installed Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Set the working directory for the production stage
+# Set the working directory
 WORKDIR /app
 
 # Copy necessary files from the build stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
 
-# Install production dependencies
+# Install production dependencies only
 RUN npm ci --only=production
 
-# Expose the application port
+# Expose the application's port (optional, adjust if needed)
 EXPOSE 3000
 
 # Start the application

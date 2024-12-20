@@ -3,15 +3,12 @@ const { Client, LocalAuth } = pkg;
 
 import sendingQrCodeForAuth from "./utils/sendingQrCodeForAuth.js";
 import { processTheInComingMessage } from "./controller/processTheInComingMessage.js";
-
 // Initialize the client
 const client = new Client({
   puppeteer: {
     headless: true,
   },
-  authStrategy: new LocalAuth({
-    clientId: "client-two-new",
-  }),
+  authStrategy: new LocalAuth(),
 });
 
 // Event: Authentication Successful
