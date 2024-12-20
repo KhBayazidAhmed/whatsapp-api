@@ -85,34 +85,34 @@ export default async function generatePDF(
         );
       }
 
-      // Fit text within containers
-      function fitTextToContainer(con: string, textEle: string) {
-        const container = document.getElementById(con);
-        const text = document.getElementById(textEle);
-        if (!container || !text) return;
+      // // Fit text within containers
+      // function fitTextToContainer(con: string, textEle: string) {
+      //   const container = document.getElementById(con);
+      //   const text = document.getElementById(textEle);
+      //   if (!container || !text) return;
 
-        let fontSize = textEle === "nameBangla" ? 18 : 14;
-        text.style.fontSize = fontSize + "px";
-        text.style.whiteSpace = "nowrap";
+      //   let fontSize = textEle === "nameBangla" ? 18 : 14;
+      //   text.style.fontSize = fontSize + "px";
+      //   text.style.whiteSpace = "nowrap";
 
-        while (
-          text.offsetWidth > container.clientWidth ||
-          text.offsetHeight > container.clientHeight
-        ) {
-          fontSize--;
-          text.style.fontSize = fontSize + "px";
-          if (fontSize <= 0) {
-            console.warn("Font size reached zero; text may not fit.");
-            break;
-          }
-        }
-      }
+      //   while (
+      //     text.offsetWidth > container.clientWidth ||
+      //     text.offsetHeight > container.clientHeight
+      //   ) {
+      //     fontSize--;
+      //     text.style.fontSize = fontSize + "px";
+      //     if (fontSize <= 0) {
+      //       console.warn("Font size reached zero; text may not fit.");
+      //       break;
+      //     }
+      //   }
+      // }
 
-      fitTextToContainer("english_name_container", "nameEnglish");
-      fitTextToContainer("bangla_name_container", "nameBangla");
+      // fitTextToContainer("english_name_container", "nameEnglish");
+      // fitTextToContainer("bangla_name_container", "nameBangla");
     }, userData);
 
-    const pdfBuffer: Buffer = await page.pdf({ format: "A4" });
+    const pdfBuffer: Buffer = await page.pdf();
     return pdfBuffer.toString("base64");
   } catch (error) {
     console.error("Error generating PDF:", error);

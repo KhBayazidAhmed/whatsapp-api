@@ -8,10 +8,9 @@ import { processTheInComingMessage } from "./controller/processTheInComingMessag
 const client = new Client({
   puppeteer: {
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   },
   authStrategy: new LocalAuth({
-    clientId: "client-two",
+    clientId: "client-two-new",
   }),
 });
 
@@ -26,6 +25,7 @@ client.once("auth_failure", (msg) => {
   console.log("[Client] Attempting to send QR code...");
   sendingQrCodeForAuth(client);
 });
+// replay hello to the user
 
 // Event: Client Ready
 client.once("ready", () => {
