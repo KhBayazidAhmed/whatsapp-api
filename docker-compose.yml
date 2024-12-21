@@ -13,8 +13,10 @@ services:
 
   puppeteer_app:
     build: ./Nodejs_server
-    ports:
-      - "4000:4000"
+    depends_on:
+      - mongo
+      - python_app
+      - image_api
     networks:
       - app_network
     environment:
@@ -23,6 +25,8 @@ services:
       - IMAGE_API_URL=http://image_api:3000
       - PYTHON_URL=http://python_app:8000
       - MONGODB_URI=mongodb://root:biz@mongo:27017
+    volumes:
+      - ./Nodejs_server/htmlNidTemplate:/app/htmlNidTemplate
   python_app:
     build: ./Python_server
     ports:
