@@ -1,6 +1,8 @@
 async function extractTextFromBase64(pdfBase64: string): Promise<any | null> {
+  const PYTHON_SERVICE_URL = process.env.PYTHON_URL || "http://127.0.0.1:8000";
+  console.log(PYTHON_SERVICE_URL);
   try {
-    const response = await fetch("http://127.0.0.1:8000/process_pdf_base64", {
+    const response = await fetch(`${PYTHON_SERVICE_URL}/process_pdf_base64`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

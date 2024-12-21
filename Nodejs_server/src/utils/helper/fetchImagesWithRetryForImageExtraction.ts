@@ -13,10 +13,12 @@ const fetchImagesWithRetry = async (
   pdfBase64: string,
   retries: number = 3
 ): Promise<apiResponseImagExtraction | null> => {
+  const IMAGE_API_URL = process.env.IMAGE_API_URL || "http://127.0.0.1:3000";
+  console.log(IMAGE_API_URL);
   let attempt = 0;
   while (attempt < retries) {
     try {
-      const response = await fetch("http://127.0.0.1:3000/extract-images", {
+      const response = await fetch(`${IMAGE_API_URL}/extract-images`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

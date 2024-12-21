@@ -1,0 +1,54 @@
+services:
+  image_api:
+    build: ./nodejs_image_extraction
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - PUPPETEER_URL=http://puppeteer_app:4000
+      - PYTHON_URL=http://python_app:8000
+
+  puppeteer_app:
+    build: ./Nodejs_server
+    ports:
+      - "4000:4000"
+    networks:
+      - app_network
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - IMAGE_API_URL=http://image_api:3000
+      - PYTHON_URL=http://python_app:8000
+      - MONGODB_URI=mongodb://root:biz@mongo:27017
+  python_app:
+    build: ./Python_server
+    ports:
+      - "8000:8000"
+    networks:
+      - app_network
+    environment:
+      - FLASK_ENV=production
+      - PORT=8000
+      - IMAGE_API_URL=http://image_api:3000
+      - PUPPETEER_URL=http://puppeteer_app:4000
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - app_network
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=biz
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mongo_data:

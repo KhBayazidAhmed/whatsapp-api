@@ -9,7 +9,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy the rest of the application files
 COPY . .
@@ -17,19 +17,24 @@ COPY . .
 # Compile TypeScript to JavaScript
 RUN npm run build
 
+# Debug: Check if the build directory exists
+RUN ls -l /app/dist
+
 # Stage 2: Production stage
-FROM ubuntu:20.04 as production
+FROM node:18-alpine
 
-# Install Chromium dependencies and Chromium
+# Install Chromium and its dependencies
 RUN apk add --no-cache \
-    gconf libgbm libasound2 libcairo libgdk-pixbuf libatk libcups libdbus \
-    libexpat libfontconfig libgcc libgconf-2 libglib libgtk-3 libnspr \
-    libpango libx11 libxcb libxcomposite libxcursor libxdamage libxext \
-    libxi libxrandr libxrender libxss libxtst ca-certificates \
-    chromium nss
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 
-# Set Puppeteer executable path to the locally installed Chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Set Puppeteer-specific environment variables
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_ENV=production
 
 # Set the working directory
 WORKDIR /app
@@ -37,12 +42,14 @@ WORKDIR /app
 # Copy necessary files from the build stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/htmlNidTemplate ./htmlNidTemplate
+
+
+# Debug: Check if files are copied
+RUN ls -l /app/dist
 
 # Install production dependencies only
-RUN npm ci --only=production
-
-# Expose the application's port (optional, adjust if needed)
-EXPOSE 3000
+RUN npm install --omit=dev
 
 # Start the application
 CMD ["node", "dist/index.js"]
