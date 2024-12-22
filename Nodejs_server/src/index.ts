@@ -20,10 +20,11 @@ mongoose.connect(MONGODB_URI).then(() => {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     },
     authStrategy: new RemoteAuth({
-      clientId: "client-id",
+      clientId: "client-id-new",
       store: store,
       backupSyncIntervalMs: 300000,
     }),
+    authTimeoutMs: 30000,
   });
 
   // Event: Authentication Successful

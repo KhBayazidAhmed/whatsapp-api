@@ -64,19 +64,26 @@ export default async function generatePDF(
     await page.goto(`file://${filePath}`, { waitUntil: "networkidle0" });
 
     await page.evaluate((user) => {
-      document.getElementById("nameEnglish")!.innerHTML = user.nameEnglish;
-      document.getElementById("nameBangla")!.innerHTML = user.nameBangla;
-      document.getElementById("fatherName")!.innerHTML = user.fatherName;
-      document.getElementById("motherName")!.innerHTML = user.motherName;
-      document.getElementById("nidNumber")!.innerHTML = user.nationalId;
+      document.getElementById("nameEnglish")!.innerHTML =
+        user.nameEnglish.replaceAll("\n", " ");
+      document.getElementById("nameBangla")!.innerHTML =
+        user.nameBangla.replaceAll("\n", " ");
+      document.getElementById("fatherName")!.innerHTML =
+        user.fatherName.replaceAll("\n", " ");
+      document.getElementById("motherName")!.innerHTML =
+        user.motherName.replaceAll("\n", " ");
+      document.getElementById("nidNumber")!.innerHTML =
+        user.nationalId.replaceAll("\n", " ");
       document.getElementById("address")!.innerHTML = user.address
         .replaceAll("\n", " ")
         .trim();
       document.getElementById("bloodGroup")!.innerHTML = user.bloodGroup || "";
-      document.getElementById("birthPlace")!.innerHTML = user.birthPlace;
+      document.getElementById("birthPlace")!.innerHTML =
+        user.birthPlace.replaceAll("\n", " ");
       document.getElementById("userPhoto")!.setAttribute("src", user.userImage);
       document.getElementById("userSign")!.setAttribute("src", user.userSign);
-      document.getElementById("dateOfBirth")!.innerHTML = user.dateOfBirth;
+      document.getElementById("dateOfBirth")!.innerHTML =
+        user.dateOfBirth.replaceAll("\n", " ");
 
       // Barcode generation
       if (typeof window.barCodeGenerateForNid === "function") {
@@ -84,32 +91,35 @@ export default async function generatePDF(
           `<pin>${user.pin}</pin><name>${user.nameEnglish}</name><DOB>${user.dateOfBirth}</DOB><FP></FP><F>Right Index</F><TYPE></TYPE><V>2.0</V> <ds>302c0214103fc01240542ed736c0b48858c1c03d80006215021416e73728de9618fedcd368c88d8f3a2e72096d</ds>`
         );
       }
+      function fitTextToContainer(con: string, textEle: string) {
+        const container = document.getElementById(con);
+        const text = document.getElementById(textEle);
+        if (!container || !text) return;
 
-      // // Fit text within containers
-      // function fitTextToContainer(con: string, textEle: string) {
-      //   const container = document.getElementById(con);
-      //   const text = document.getElementById(textEle);
-      //   if (!container || !text) return;
+        // Set an initial font size in pt based on the element
+        let fontSize = textEle === "nameBangla" ? 12.4 : 10.2; // Start font size in pt
+        text.style.fontSize = fontSize + "pt"; // Apply initial font size
+        // Reduce font size until the text fits within the container
+        while (
+          text.offsetWidth > container.clientWidth || // Check if text overflows width
+          text.offsetHeight > container.clientHeight // Check if text overflows height
+        ) {
+          fontSize -= 0.1; // Decrease font size in 0.1pt increments
+          text.style.fontSize = fontSize + "pt"; // Apply updated font size
 
-      //   let fontSize = textEle === "nameBangla" ? 18 : 14;
-      //   text.style.fontSize = fontSize + "px";
-      //   text.style.whiteSpace = "nowrap";
+          // Prevent infinite loop if text cannot fit
+          if (fontSize <= 0.1) {
+            console.warn(
+              "Font size reached the minimum limit (0.1pt); text may not fit."
+            );
+            break;
+          }
+        }
+      }
 
-      //   while (
-      //     text.offsetWidth > container.clientWidth ||
-      //     text.offsetHeight > container.clientHeight
-      //   ) {
-      //     fontSize--;
-      //     text.style.fontSize = fontSize + "px";
-      //     if (fontSize <= 0) {
-      //       console.warn("Font size reached zero; text may not fit.");
-      //       break;
-      //     }
-      //   }
-      // }
-
-      // fitTextToContainer("english_name_container", "nameEnglish");
-      // fitTextToContainer("bangla_name_container", "nameBangla");
+      // Apply the function to the containers and elements
+      fitTextToContainer("english_name_container", "nameEnglish");
+      fitTextToContainer("bangla_name_container", "nameBangla");
     }, userData);
 
     const pdfBuffer: Buffer = await page.pdf({

@@ -67,9 +67,7 @@
   height: 37px;
   /* margin-left: -12px; */
 }
-.nid_front_header_text_container {
-  /* margin-top: 1px; */
-}
+
 .nid_front_header_text_container h1 {
   font-size: 15pt;
   font-family: "Bangla", "arial";
@@ -184,12 +182,15 @@
 
 #bangla_name_container {
   padding-left: 18px;
-  width: 200px;
+  width: 195px;
   font-weight: bold;
+  white-space: nowrap;
 }
 #nameBangla {
   color: #212529;
   font-weight: 400;
+  white-space: nowrap;
+  font-size: 12.4pt;
   -webkit-text-stroke: 0.5px black;
   -webkit-text-size-adjust: 100%;
 }
@@ -205,14 +206,16 @@
 }
 
 #english_name_container {
-  width: 198px;
+  width: 195px;
   margin-left: 9px;
+  white-space: nowrap;
 }
 #nameEnglish {
   font-family: arial;
   font-size: 10.2pt;
   color: black;
   /* font-weight: 500; */
+  white-space: nowrap;
   letter-spacing: 0.5px;
   /* margin-top: -4px; */
 }
