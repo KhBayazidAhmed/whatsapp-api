@@ -1,8 +1,8 @@
 import { ParsedData } from "./formatTheString.js";
-import getAddressString from "./helper/makingAddress.js";
 import { Client, MessageMedia } from "whatsapp-web.js";
 import path from "path";
 import fetchImagesWithRetry from "./helper/fetchImagesWithRetryForImageExtraction.js";
+import NIDData from "../db/nid.model.js";
 
 type UserData = {
   nameEnglish: string;
@@ -10,7 +10,7 @@ type UserData = {
   fatherName: string;
   motherName: string;
   nationalId: string;
-  address: string;
+  nidAddress: string;
   bloodGroup?: string;
   birthPlace: string;
   userImage: string;
@@ -28,25 +28,22 @@ declare global {
 export default async function generatePDF(
   parsedData: ParsedData,
   client: Client,
-  media: MessageMedia
+  media: MessageMedia,
+  id: string
 ): Promise<string> {
   console.log("Generating PDF...");
-
-  const AddressObj =
-    parsedData.voterAt === "present"
-      ? parsedData.presentAddress
-      : parsedData.permanentAddress;
-  const addressString = getAddressString(AddressObj);
 
   // Fetch images with retries
   const images = await fetchImagesWithRetry(media.data);
   if (!images?.images || images.images.length < 2) {
     throw new Error("Failed to fetch sufficient images.");
   }
-
+  await NIDData.findByIdAndUpdate(id, {
+    userImage: getImageBase64(images.images[0]),
+    userSign: getImageBase64(images.images[1]),
+  });
   const userData: UserData = {
     ...parsedData,
-    address: addressString,
     userImage: getImageBase64(images.images[0]),
     userSign: getImageBase64(images.images[1]),
   };
@@ -74,7 +71,7 @@ export default async function generatePDF(
         user.motherName.replaceAll("\n", " ");
       document.getElementById("nidNumber")!.innerHTML =
         user.nationalId.replaceAll("\n", " ");
-      document.getElementById("address")!.innerHTML = user.address
+      document.getElementById("address")!.innerHTML = user.nidAddress
         .replaceAll("\n", " ")
         .trim();
       document.getElementById("bloodGroup")!.innerHTML = user.bloodGroup || "";

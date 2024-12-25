@@ -64,6 +64,7 @@ export type ParsedData = {
   noFingerPrint: string | null;
   voterArea: string | null;
   voterAt: string | null;
+  nidAddress: string;
 };
 
 function formatTheString(data: string): ParsedData {
@@ -182,7 +183,7 @@ function formatTheString(data: string): ParsedData {
     occupation: extractData("Occupation", "Disability"),
     disability: extractData("Disability", "Disability Other"),
     disabilityOther: extractData("Disability Other", "Present Address"),
-
+    nidAddress: "",
     // Parsing Present and Permanent addresses using the parseAddress function
     presentAddress: parsePresentAddress(),
     permanentAddress: parsePermanentAddress(),

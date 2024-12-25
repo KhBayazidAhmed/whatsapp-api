@@ -1,60 +1,56 @@
-import pkg from "whatsapp-web.js";
-const { Client, RemoteAuth } = pkg;
-import { MongoStore } from "wwebjs-mongo";
-import mongoose from "mongoose";
-import sendingQrCodeForAuth from "./utils/sendingQrCodeForAuth.js";
+import express, { Request, Response, NextFunction } from "express";
+import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/users.js";
+import balanceRoutes from "./routes/balance.js";
+import whatsappRoutes from "./routes/whatsapp.js";
+import nidRouters from "./routes/nid.js";
+
+import { connectToDB } from "./db/connection.js";
+import { WhatsAppClient } from "./types/index.js";
+import { initializeClient } from "./config/whatsappClient.js";
+import { IUser } from "./db/user.model.js";
 import { processTheInComingMessage } from "./controller/processTheInComingMessage.js";
-import qrcode from "qrcode-terminal";
-const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  console.error("Please define the MONGODB_URI environment variable ");
-  process.exit(1);
+// Extend Request type to include WhatsAppClient
+declare global {
+  namespace Express {
+    interface Request {
+      whatsappClient: WhatsAppClient;
+      user?: IUser; // user property can be added if available
+    }
+  }
 }
-// Connect to MongoDB
-mongoose.connect(MONGODB_URI).then(() => {
-  const store = new MongoStore({ mongoose: mongoose });
-  const client = new Client({
-    puppeteer: {
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    },
-    authStrategy: new RemoteAuth({
-      clientId: "client-id-new",
-      store: store,
-      backupSyncIntervalMs: 300000,
-    }),
-    authTimeoutMs: 30000,
+
+// Constants
+const PORT = process.env.PORT || 3000;
+
+// Initialize Express
+const app = express();
+// Middleware to parse JSON body
+app.use(express.json());
+
+// Connect to MongoDB and Initialize WhatsApp Client
+connectToDB()
+  .then((mongoose) => {
+    const client = initializeClient(mongoose);
+    // Middleware to make client available in routes
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      req.whatsappClient = client;
+      next();
+    });
+
+    // Routes
+    app.use("/auth", authRoutes);
+    app.use("/users", userRoutes);
+    app.use("/whatsapp", whatsappRoutes);
+    app.use("/balance", balanceRoutes);
+    app.use("/nid", nidRouters);
+    processTheInComingMessage(client);
+    // Start Server
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Error starting application: ", err);
   });
-
-  // Event: Authentication Successful
-  client.once("authenticated", () => {
-    console.log("[Client] Authenticated successfully.");
-  });
-
-  // Event: Authentication Failure
-  client.once("auth_failure", (msg) => {
-    console.error("[Client] Authentication failed:", msg);
-    console.log("[Client] Attempting to send QR code...");
-    sendingQrCodeForAuth(client);
-  });
-
-  // Event: Client Ready
-  client.once("ready", () => {
-    console.log("[Client] Ready for action!");
-  });
-
-  // Event: QR Code received
-  client.on("qr", (qr) => {
-    console.log("[Client] QR Received:");
-    qrcode.generate(qr, { small: true }); // Display the QR code in the terminal
-    // sendingQrCodeForAuth(client); // Uncomment if you want to send the QR code somewhere
-  });
-
-  // Process incoming messages
-  processTheInComingMessage(client);
-
-  // Initialize the client
-  console.log("Initializing Client...");
-  client.initialize();
-});
