@@ -1,3 +1,5 @@
+import getAddressString from "./helper/makingAddress.js";
+
 type Address = {
   division: string;
   district: string;
@@ -65,6 +67,10 @@ export type ParsedData = {
   voterArea: string | null;
   voterAt: string | null;
   nidAddress: string;
+  nidPermanentAddress: string;
+  nidPresentAddress: string;
+  userImage: string;
+  userSign: string | undefined;
 };
 
 function formatTheString(data: string): ParsedData {
@@ -158,6 +164,8 @@ function formatTheString(data: string): ParsedData {
         "",
     };
   };
+  const voterAt = data.match(/Voter At\n(.*)/)?.[1] || "";
+
   return {
     citizen: extractData("Citizen", "National ID"),
     nationalId: extractDataForNid("National ID", "Pin"),
@@ -183,16 +191,24 @@ function formatTheString(data: string): ParsedData {
     occupation: extractData("Occupation", "Disability"),
     disability: extractData("Disability", "Disability Other"),
     disabilityOther: extractData("Disability Other", "Present Address"),
-    nidAddress: "",
     // Parsing Present and Permanent addresses using the parseAddress function
     presentAddress: parsePresentAddress(),
+    nidPresentAddress: getAddressString(parsePresentAddress()),
+    nidAddress:
+      voterAt === "present"
+        ? getAddressString(parsePresentAddress())
+        : getAddressString(parsePermanentAddress()),
     permanentAddress: parsePermanentAddress(),
-
+    nidPermanentAddress: getAddressString(parsePermanentAddress()),
+    userImage: "",
+    userSign: "",
     education:
       extractData("Education", "Education Other")?.split("Smart Card")[0] ||
       extractData("Education", "Education Other"),
     identification: extractData("Identification", "Blood Group"),
-    bloodGroup: extractData("Blood Group", "TIN") || undefined,
+    bloodGroup:
+      extractData("Blood Group", "TIN")?.match(/^(A|B|AB|O)[+-]$/)?.[0] ||
+      undefined,
     tin: extractData("TIN", "Driving"),
     driving: extractData("Driving", "Passport"),
     passport: extractData("Passport", "Laptop ID"),
@@ -211,7 +227,7 @@ function formatTheString(data: string): ParsedData {
     noFingerPrint: extractData("No Finger Print", "Voter Area"),
     voterArea: extractData("Voter Area", "Voter At"),
     // Special case: Extract voterAt using regex as a fallback
-    voterAt: data.match(/Voter At\n(.*)/)?.[1] || "",
+    voterAt,
   };
 }
 

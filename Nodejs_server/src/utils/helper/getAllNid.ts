@@ -15,6 +15,10 @@ export default async function getAllNid(req: Request, res: Response) {
       {},
       { nationalId: 1, nameEnglish: 1, _id: 1 }
     )
+      .populate({
+        path: "user",
+        select: "whatsAppNumber",
+      })
       .skip(skip)
       .limit(limit);
 

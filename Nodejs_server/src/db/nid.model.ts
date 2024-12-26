@@ -67,8 +67,11 @@ const NIDDataSchema = new mongoose.Schema({
   voterArea: { type: String, default: null },
   voterAt: { type: String, default: null },
   nidAddress: { type: String, default: null },
+  nidPermanentAddress: { type: String },
+  nidPresentAddress: { type: String },
   userImage: { type: String },
   userSign: { type: String },
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

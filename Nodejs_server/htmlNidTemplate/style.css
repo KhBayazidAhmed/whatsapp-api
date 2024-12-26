@@ -188,11 +188,12 @@
 }
 #nameBangla {
   color: #212529;
-  font-weight: 400;
+  font-weight: 700;
   white-space: nowrap;
   font-size: 12.4pt;
-  -webkit-text-stroke: 0.5px black;
-  -webkit-text-size-adjust: 100%;
+  font-family: bangla;
+  /* -webkit-text-stroke: 0.5px black; */
+  /* -webkit-text-size-adjust: 100%; */
 }
 .nid_front_body_content_details_name_english {
   margin-top: -4px;

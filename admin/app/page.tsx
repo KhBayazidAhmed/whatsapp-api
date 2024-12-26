@@ -11,11 +11,15 @@ import {
 import { Pagination } from "@/components/Pagination";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import SearchButton from "@/components/SearchButton";
 type GetAllNidResponse = {
   data: {
     nationalId: string;
     nameEnglish: string;
     _id: string;
+    user: {
+      whatsAppNumber: string;
+    };
   }[];
   meta: {
     totalDocuments: number;
@@ -26,7 +30,7 @@ type GetAllNidResponse = {
 };
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
-const LIMIT = 5;
+const LIMIT = 10;
 async function fetchEntries(page: number) {
   const response = await fetch(
     `${process.env.API_BASE_URL}/nid/all-nid?page=${page}&limit=${LIMIT}`
@@ -48,16 +52,21 @@ export default async function HomePage({
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold mb-4">Home</h1>
-      <form className="mb-4">
+      <form
+        action={async (formData: FormData) => {
+          "use server";
+          redirect(`/edit-nid/${formData.get("nidNumber")}`);
+        }}
+        className="mb-4"
+      >
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Input
             type="text"
+            name="nidNumber"
             placeholder="Search by NID number"
             className="w-full sm:w-auto"
           />
-          <Button type="submit" className="w-full sm:w-auto">
-            Search
-          </Button>
+          <SearchButton />
         </div>
       </form>
       <div className="overflow-x-auto">
@@ -67,6 +76,8 @@ export default async function HomePage({
               <TableHead className="w-[100px]">Serial Number</TableHead>
               <TableHead>NID Number</TableHead>
               <TableHead>Name</TableHead>
+              <TableHead>User WhatsApp</TableHead>
+
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -78,13 +89,15 @@ export default async function HomePage({
                 </TableCell>
                 <TableCell>{entry.nationalId}</TableCell>
                 <TableCell>{entry.nameEnglish}</TableCell>
+                <TableCell>{entry.user.whatsAppNumber}</TableCell>
                 <TableCell className="text-right">
                   <Link href={`/edit-nid/${entry.nationalId}`}>
-                    <Button variant="outline" className="mr-2 mb-2 sm:mb-0">
+                    <Button variant="default" className="mr-2 mb-2 sm:mb-0">
                       Edit
                     </Button>
                   </Link>
-                  <Button variant="default">Print</Button>
+
+                  {/* <Button variant="default">Print</Button> */}
                 </TableCell>
               </TableRow>
             ))}

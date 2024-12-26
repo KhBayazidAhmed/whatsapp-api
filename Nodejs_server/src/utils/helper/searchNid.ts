@@ -12,8 +12,10 @@ export default async function searchNid(req: Request, res: Response) {
     const searchQuery = req.query.q as string;
 
     // Search the database for the nationalId field
-    const nid = await NIDData.findOne({ nationalId: searchQuery });
-
+    const nid = await NIDData.findOne({ nationalId: searchQuery }).populate({
+      path: "user",
+      select: "whatsAppNumber",
+    });
     // If no document is found, return a 404 error
     if (!nid || nid.length === 0) {
       res

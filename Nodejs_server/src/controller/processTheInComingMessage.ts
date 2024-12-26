@@ -6,34 +6,39 @@ import formatTheString from "../utils/formatTheString.js";
 import generatePDF from "../utils/generateTheNid.js";
 import NIDData from "../db/nid.model.js";
 import { User } from "../db/user.model.js";
-import getAddressString from "../utils/helper/makingAddress.js";
+import fetchImagesWithRetry from "../utils/helper/fetchImagesWithRetryForImageExtraction.js";
 
 interface ApiResponse {
   text: string;
 }
 
-export function processTheInComingMessage(client: Client) {
+interface Image {
+  base64: string;
+  filename: string;
+}
+
+export default function processTheInComingMessage(client: Client) {
   client.on("message", async (msg: Message) => {
     try {
-      console.log("Received a new message from", msg.from);
+      console.log(`Received a new message from ${msg.from}`);
 
       if (!msg.hasMedia) {
         console.log("No media found in the message.");
+        await msg.reply("Please send a valid PDF file for processing.");
         return;
       }
 
       console.log("Message has media, proceeding to download...");
 
-      // Fetch user by WhatsApp number
       const user = await User.findOne({ whatsAppNumber: msg.from }).exec();
       if (!user) {
-        await msg.reply("User not found.");
+        console.warn(`User not found for WhatsApp number: ${msg.from}`);
         return;
       }
 
-      // Check if user has sufficient balance
       const processingCost = user.price || 5;
       if (user.balance < processingCost) {
+        console.warn(`Insufficient balance for user: ${msg.from}`);
         await msg.reply(
           `Insufficient balance. Your current balance is ${user.balance}. Please recharge to continue.`
         );
@@ -41,10 +46,11 @@ export function processTheInComingMessage(client: Client) {
       }
 
       const media = await msg.downloadMedia();
-
       if (!media || media.mimetype !== "application/pdf") {
-        await msg.reply("This is not a valid PDF file.");
         console.log("Received non-PDF media.");
+        await msg.reply(
+          "This is not a valid PDF file. Please send a valid NID PDF."
+        );
         return;
       }
 
@@ -53,14 +59,16 @@ export function processTheInComingMessage(client: Client) {
         media.data
       );
 
-      if (!extractedText || !extractedText.text) {
-        await msg.reply("Failed to extract text from the PDF.");
+      if (!extractedText?.text) {
+        console.error("Failed to extract text from PDF.");
+        await msg.reply(
+          "Failed to extract text from the PDF. Please try again."
+        );
         return;
       }
 
       const formattedText = formatTheString(extractedText.text);
 
-      // Validate extracted NID data
       if (
         !formattedText.nationalId ||
         !formattedText.nameBangla ||
@@ -70,35 +78,48 @@ export function processTheInComingMessage(client: Client) {
         !formattedText.fatherName ||
         !formattedText.motherName
       ) {
+        console.warn("Invalid NID PDF format.");
         await msg.reply("This is not a valid NID PDF file.");
         return;
       }
 
       try {
-        const addressObject =
-          formattedText.voterAt === "present"
-            ? formattedText.presentAddress
-            : formattedText.permanentAddress;
-        const addressString = getAddressString(addressObject);
-        formattedText.nidAddress = addressString;
+        console.log("Fetching images from PDF...");
+        const images = await fetchImagesWithRetry(media.data);
+        if (!images?.images) {
+          throw new Error("Failed to fetch sufficient images.");
+        }
+        formattedText.userImage = getImageBase64(images?.images[0]) as string;
+        formattedText.userSign = getImageBase64(images?.images[1]);
 
-        // Save NID data to the database
-        const nid = await NIDData.create({
-          ...formattedText,
+        console.log("Checking if NID already exists...");
+        const existingNid = await NIDData.findOne({
+          nationalId: formattedText.nationalId,
           user: user._id,
         });
-        console.log("Data saved to database with ID:", nid._id);
 
-        // Deduct the balance
-        await user.updateOne({ $inc: { balance: -processingCost } });
-        console.log(
-          `Balance deducted by ${processingCost}. Remaining balance: ${
-            user.balance - processingCost
-          }`
-        );
+        if (!existingNid) {
+          console.log("Saving new NID data to database...");
+          const nid = await NIDData.create({
+            ...formattedText,
+            user: user._id,
+          });
 
-        // Generate PDF and send it back
-        const pdf = await generatePDF(formattedText, client, media, nid._id);
+          console.log(`Data saved with ID: ${nid._id}`);
+          await user.updateOne({ $inc: { balance: -processingCost } });
+          console.log(
+            `Balance deducted by ${processingCost}. Remaining balance: ${
+              user.balance - processingCost
+            }`
+          );
+        } else {
+          console.log(
+            `NID already exists for nationalId: ${formattedText.nationalId}`
+          );
+        }
+
+        console.log("Generating PDF for the processed NID...");
+        const pdf = await generatePDF(formattedText, client);
         const mediaNid = new MessageMedia(
           "application/pdf",
           pdf,
@@ -106,18 +127,25 @@ export function processTheInComingMessage(client: Client) {
         );
 
         await msg.reply(mediaNid, undefined, {
-          caption: formattedText.nameEnglish,
+          caption: `Processed NID for ${formattedText.nameEnglish}`,
         });
       } catch (error) {
-        console.error("Error saving to database or sending response:", error);
-        await msg.reply("An error occurred while processing your request.");
+        console.error("Error during NID processing:", error);
+        await msg.reply(
+          "An error occurred while processing your request. Please try again."
+        );
       }
     } catch (error: any) {
-      console.error(
-        "Unexpected error while processing message:",
-        error.message
-      );
-      await msg.reply("An error occurred while processing the message.");
+      console.error("Unexpected error while processing message:", error);
+      await msg.reply("An unexpected error occurred. Please try again later.");
     }
   });
+}
+
+function getImageBase64(image: Image): string | undefined {
+  if (!image?.base64) {
+    console.log("No image found in the message.");
+    return;
+  }
+  return `data:image/png;base64,${image.base64}`;
 }

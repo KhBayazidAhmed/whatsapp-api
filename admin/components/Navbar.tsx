@@ -11,15 +11,14 @@ export default function Navbar() {
   return (
     <nav className="bg-primary text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold">
+        <Link href="/?page=1" className="text-xl font-bold">
           Admin Panel
         </Link>
         <div className="hidden md:flex space-x-5 items-center">
-          <Link href="/">Home</Link>
-          <Link href="/create-account">Add User</Link>
+          <Link href="//?page=1">Home</Link>
+          <Link href="/create-account">Users</Link>
           <Link href="/custom-message">Custom Message</Link>
           <Link href="/logs">Logs</Link>
-          <Link href="/edit-user">Edit User</Link>
           <Button variant="destructive">Log out</Button>
         </div>
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
@@ -38,7 +37,7 @@ export default function Navbar() {
             href="/create-account"
             className="block py-2 border-b border-primary-foreground"
           >
-            Add User
+            Users
           </Link>
 
           <Link
@@ -52,12 +51,6 @@ export default function Navbar() {
             className="block py-2 border-b border-primary-foreground"
           >
             Logs
-          </Link>
-          <Link
-            href="/edit-user"
-            className="block py-2 border-b border-primary-foreground"
-          >
-            Edit User
           </Link>
 
           <Button variant="destructive">Log out</Button>
