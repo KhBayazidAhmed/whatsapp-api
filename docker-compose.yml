@@ -22,8 +22,8 @@ services:
       - IMAGE_API_URL=http://image_api:4000
       - PYTHON_URL=http://python_app:8000
       - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
-      - TELEGRAM_BOT_TOKEN=8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM
-      - TELEGRAM_CHAT_ID="-7443568056"
+      # - TELEGRAM_BOT_TOKEN=8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM
+      # - TELEGRAM_CHAT_ID="-7443568056"
       
 
     volumes:
@@ -52,7 +52,7 @@ services:
       - API_BASE_URL=http://puppeteer_app:4000
       
   mongo:
-    image: mongo
+    image: mongo:5.0.10
     ports:
       - "27017:27017"
     networks:

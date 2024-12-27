@@ -19,9 +19,10 @@ export const initializeClient = (
     puppeteer: {
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: "/usr/bin/chromium-browser",
     },
     authStrategy: new RemoteAuth({
-      clientId: "client-user-new",
+      clientId: "client-10",
       store: store,
       backupSyncIntervalMs: 300000,
     }),

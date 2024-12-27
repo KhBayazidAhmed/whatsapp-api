@@ -1,7 +1,9 @@
 import winston from "winston";
 import "winston-mongodb";
 
-const mongoDBUri = process.env.MONGODB_URI;
+const mongoDBUri =
+  process.env.MONGODB_URI ||
+  "mongodb://root:biz@127.0.0.1:27017/biz?authSource=admin";
 if (!mongoDBUri) {
   console.error("Please define the MONGODB_URI environment variable.");
   process.exit(1);
@@ -10,7 +12,6 @@ if (!mongoDBUri) {
 // MongoDB URI and options
 const mongoDBOptions = {
   useUnifiedTopology: true,
-  useNewUrlParser: true,
 };
 
 // Configure Winston logger
