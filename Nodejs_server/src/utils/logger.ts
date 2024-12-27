@@ -10,9 +10,7 @@ if (!mongoDBUri) {
 }
 
 // MongoDB URI and options
-const mongoDBOptions = {
-  useUnifiedTopology: true,
-};
+const mongoDBOptions = {};
 
 // Configure Winston logger
 const logger = winston.createLogger({
