@@ -1,5 +1,8 @@
 "use server";
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 type UserData = {
   nameEnglish: string;
   nameBangla: string;
@@ -16,14 +19,18 @@ type UserData = {
   whatsAppNumber: string;
 };
 export default async function generateNid(values: UserData) {
-  console.log("nid data", values);
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
+
   const url = `${process.env.API_BASE_URL}/nid/generateNid`;
-  console.log("API URL:", url);
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(values),
     });
@@ -32,7 +39,9 @@ export default async function generateNid(values: UserData) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Response:", data); // Handle the response here
+    if (data.failedAuth) {
+      redirect("/login");
+    }
   } catch (error) {
     console.error("Error:", error); // Handle any error that occurs
   }

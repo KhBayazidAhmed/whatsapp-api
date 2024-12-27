@@ -5,7 +5,7 @@ import { authenticateJWT } from "../utils/middleware/authenticate.js";
 
 const router = express.Router();
 
-router.post("/create-user", createUser);
+router.post("/create-user", authenticateJWT, createUser);
 router.post("/login", login);
 
 export default router;

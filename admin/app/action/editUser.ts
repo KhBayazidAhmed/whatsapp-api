@@ -1,14 +1,21 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function editUser(_initial: any, formData: FormData) {
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
   try {
     const response = await fetch(`${process.env.API_BASE_URL}/users/edit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       credentials: "same-origin",
       body: JSON.stringify({
@@ -25,7 +32,9 @@ export default async function editUser(_initial: any, formData: FormData) {
     }
 
     const data = await response.json();
-
+    if (data.failedAuth) {
+      redirect("/login");
+    }
     // Revalidate path after successful update
     revalidatePath("/create-account");
 

@@ -9,9 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/Pagination";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import SearchButton from "@/components/SearchButton";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import HomeAnalytics from "@/components/HomeAnalytics";
+
 type GetAllNidResponse = {
   data: {
     nationalId: string;
@@ -27,30 +30,50 @@ type GetAllNidResponse = {
     totalPages: number;
     limit: number;
   };
+  failedAuth: boolean;
 };
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 const LIMIT = 10;
+
 async function fetchEntries(page: number) {
+  const token = (await cookies()).get("token");
+  if (!token) {
+    redirect("/login"); // Redirect to login if no token is found
+  }
   const response = await fetch(
-    `${process.env.API_BASE_URL}/nid/all-nid?page=${page}&limit=${LIMIT}`
+    `${process.env.API_BASE_URL}/nid/all-nid?page=${page}&limit=${LIMIT}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.value}`, // Add the Bearer token here
+      },
+    }
   );
+
   const data = (await response.json()) as GetAllNidResponse;
+  if (data.failedAuth) {
+    redirect("/login");
+  }
   return data;
 }
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const page = Number((await searchParams).page);
+  let page = Number((await searchParams).page);
   if (!page) {
-    redirect("/?page=1");
+    page = 1; // Default page number if none is provided
+    redirect("/?page=1"); // Redirect to page 1 if page parameter is missing
   }
+
   const entries = await fetchEntries(page);
+
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div>
+        <HomeAnalytics />
+      </div>
       <h1 className="text-2xl font-bold mb-4">Home</h1>
       <form
         action={async (formData: FormData) => {
@@ -77,13 +100,12 @@ export default async function HomePage({
               <TableHead>NID Number</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>User WhatsApp</TableHead>
-
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {entries?.data?.map((entry, index) => (
-              <TableRow key={entry._id}>
+              <TableRow key={entry._id} className="text-nowrap">
                 <TableCell className="font-medium">
                   {entries.meta.currentPage * LIMIT - LIMIT + index + 1}
                 </TableCell>
@@ -96,8 +118,6 @@ export default async function HomePage({
                       Edit
                     </Button>
                   </Link>
-
-                  {/* <Button variant="default">Print</Button> */}
                 </TableCell>
               </TableRow>
             ))}
@@ -107,7 +127,6 @@ export default async function HomePage({
       <Pagination
         currentPage={entries.meta.currentPage}
         totalPages={entries.meta.totalPages}
-        // onPageChange={setCurrentPage}
       />
     </div>
   );

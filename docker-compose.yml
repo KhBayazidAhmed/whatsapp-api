@@ -33,6 +33,17 @@ services:
     environment:
       - FLASK_ENV=production
       - PORT=8000
+  admin:
+    build: ./admin
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
+      
   mongo:
     image: mongo
     ports:

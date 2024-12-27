@@ -72,7 +72,7 @@ const NIDDataSchema = new mongoose.Schema(
     nidPresentAddress: { type: String },
     userImage: { type: String },
     userSign: { type: String },
-
+    price: { type: Number, required: true },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

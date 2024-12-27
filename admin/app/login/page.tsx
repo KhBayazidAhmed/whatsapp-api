@@ -1,31 +1,46 @@
-'use client'
+import SubmitButton from "@/components/SubmitButton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-export default function LoginPage() {
-  const [whatsappNumber, setWhatsappNumber] = useState('')
-  const [password, setPassword] = useState('')
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle login logic here
-    console.log('Login attempt', { whatsappNumber, password })
-  }
-
+export default async function LoginPage() {
   return (
     <div className="max-w-md mx-auto w-full px-4 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        action={async (formData: FormData) => {
+          "use server";
+          const whatsAppNumber = formData.get("whatsAppNumber");
+          const password = formData.get("password");
+          const res = await fetch(`${process.env.API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              whatsAppNumber,
+              password,
+            }),
+          });
+          if (!res.ok) {
+            throw new Error("Failed to login");
+          }
+          const data = await res.json();
+          if (!data.token) {
+            throw new Error("Failed to login");
+          }
+          (await cookies()).set("token", data.token);
+          redirect("/");
+        }}
+        className="space-y-4"
+      >
         <div>
           <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
           <Input
             id="whatsappNumber"
             type="tel"
-            value={whatsappNumber}
-            onChange={(e) => setWhatsappNumber(e.target.value)}
+            name="whatsAppNumber"
             required
             className="w-full"
           />
@@ -35,15 +50,16 @@ export default function LoginPage() {
           <Input
             id="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            name="password"
             required
             className="w-full"
           />
         </div>
-        <Button type="submit" className="w-full">Login</Button>
+        <SubmitButton />
+        {/* <Button type="submit" className="w-full">
+          Login
+        </Button> */}
       </form>
     </div>
-  )
+  );
 }
-

@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/status", authenticateJWT, (req, res) => {
   res.json({ status: "WhatsApp client is running" });
 });
-router.post("/send-message", sendMessage);
+router.post("/send-message", authenticateJWT, sendMessage);
 router.get("/qr", authenticateJWT, (req, res) => {
   let qr;
   req.whatsappClient.on("qr", (qr) => {

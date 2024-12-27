@@ -10,7 +10,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 export async function login(req: Request, res: Response): Promise<void> {
   try {
     const { whatsAppNumber, password } = req.body;
-
     // Validate input
     if (!whatsAppNumber || !password) {
       res

@@ -9,6 +9,7 @@ import { User } from "../db/user.model.js";
 import fetchImagesWithRetry from "../utils/helper/fetchImagesWithRetryForImageExtraction.js";
 import logger from "../utils/logger.js";
 import { getProfileDetails } from "../utils/helper/profileDetails.js";
+import BalanceTransition from "../db/BalanceTransition.model.js";
 
 interface ApiResponse {
   text: string;
@@ -95,9 +96,16 @@ export default function processTheInComingMessage(client: Client) {
         });
 
         if (!existingNid) {
-          const nid = await NIDData.create({
+          await NIDData.create({
             ...formattedText,
             user: user._id,
+            price: processingCost,
+          });
+          await BalanceTransition.create({
+            userId: user._id,
+            amount: processingCost,
+            type: "debit",
+            balanceAfter: user.balance,
           });
 
           await user.updateOne({ $inc: { balance: -processingCost } });
@@ -107,6 +115,9 @@ export default function processTheInComingMessage(client: Client) {
             }`
           );
         } else {
+          await msg.reply(
+            `NID already exists for nationalId: ${formattedText.nationalId}`
+          );
           logger.info(
             `NID already exists for nationalId: ${formattedText.nationalId}`
           );

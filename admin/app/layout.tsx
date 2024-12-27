@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import logger from "@/lib/logger";
 import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -9,8 +8,6 @@ export const metadata = {
   title: "User Management System",
   description: "A system for managing users and NID information",
 };
-
-logger.info("Application started");
 
 export default function RootLayout({
   children,

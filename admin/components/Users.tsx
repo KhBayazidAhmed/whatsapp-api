@@ -7,6 +7,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import UserEdit from "./UserEdit";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 interface User {
   _id: string;
@@ -17,14 +19,23 @@ interface User {
   price: number;
 }
 async function getUsers() {
+  const token = (await cookies()).get("token")?.value;
+  if (!token) {
+    redirect("/login");
+  }
   const response = await fetch(`${process.env.API_BASE_URL}/users`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     credentials: "same-origin",
   });
-  const data = (await response.json()) as User[];
+
+  const data = await response.json();
+  if (data.failedAuth) {
+    redirect("/login");
+  }
   return data;
 }
 export default async function Users() {
@@ -47,7 +58,7 @@ export default async function Users() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((entry, index) => (
+            {users.map((entry: User, index: number) => (
               <TableRow key={entry._id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{entry.name}</TableCell>

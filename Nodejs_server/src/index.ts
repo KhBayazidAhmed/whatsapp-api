@@ -4,6 +4,7 @@ import userRoutes from "./routes/users.js";
 import balanceRoutes from "./routes/balance.js";
 import whatsappRoutes from "./routes/whatsapp.js";
 import nidRouters from "./routes/nid.js";
+import logsRoutes from "./routes/logs.js";
 
 import { connectToDB } from "./db/connection.js";
 import { WhatsAppClient } from "./types/index.js";
@@ -48,6 +49,7 @@ connectToDB()
     app.use("/whatsapp", whatsappRoutes);
     app.use("/balance", balanceRoutes);
     app.use("/nid", nidRouters);
+    app.use("/logs", logsRoutes);
 
     // Process Incoming Messages
     processTheInComingMessage(client);

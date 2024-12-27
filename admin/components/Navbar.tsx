@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import logout from "@/app/action/logout";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
   return (
     <nav className="bg-primary text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -19,7 +19,14 @@ export default function Navbar() {
           <Link href="/create-account">Users</Link>
           <Link href="/custom-message">Custom Message</Link>
           <Link href="/logs">Logs</Link>
-          <Button variant="destructive">Log out</Button>
+          <Button
+            onClick={async () => {
+              await logout();
+            }}
+            variant="destructive"
+          >
+            Log out
+          </Button>
         </div>
         <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -53,7 +60,14 @@ export default function Navbar() {
             Logs
           </Link>
 
-          <Button variant="destructive">Log out</Button>
+          <Button
+            onClick={async () => {
+              await logout();
+            }}
+            variant="destructive"
+          >
+            Log out
+          </Button>
         </div>
       )}
     </nav>

@@ -21,7 +21,9 @@ export const authenticateJWT = (
     logger.warn(
       `[authenticateJWT] No token provided in request from ${req.ip}`
     );
-    res.status(403).json({ message: "Access denied. No token provided." });
+    res
+      .status(403)
+      .json({ message: "Access denied. No token provided.", failedAuth: true });
     return;
   }
 
@@ -49,6 +51,8 @@ export const authenticateJWT = (
     logger.error(
       `[authenticateJWT] Failed to verify token for request from ${req.ip}: ${err.message}`
     );
-    res.status(401).json({ message: "Invalid or expired token" });
+    res
+      .status(401)
+      .json({ message: "Invalid or expired token", failedAuth: true });
   }
 };

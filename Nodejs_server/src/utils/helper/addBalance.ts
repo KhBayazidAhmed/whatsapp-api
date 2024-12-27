@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../../db/user.model.js";
 import logger from "../logger.js";
-
+import BalanceTransition from "../../db/BalanceTransition.model.js";
 export async function addBalance(req: Request, res: Response): Promise<void> {
   try {
     const { id, amount } = req.body;
@@ -27,9 +27,14 @@ export async function addBalance(req: Request, res: Response): Promise<void> {
       `[addBalance] Current balance for user ID: ${id} is ${user.balance}`
     );
 
+    await BalanceTransition.create({
+      userId: id,
+      type: "recharge",
+      amount,
+      balanceAfter: user.balance,
+    });
     // Update user's balance
     user.balance += amount;
-
     // Save updated user
     await user.save();
 

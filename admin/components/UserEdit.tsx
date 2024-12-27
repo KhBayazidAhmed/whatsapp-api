@@ -50,6 +50,10 @@ function UserEditButton({ user }: { user: User }) {
         <form action={formAction}>
           <DialogHeader>
             <DialogTitle className="text-center">Edit Profile</DialogTitle>
+            <DialogDescription className="text-center text-red-500">
+              Do not use this balance field for add balance use the add button
+              for that
+            </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">

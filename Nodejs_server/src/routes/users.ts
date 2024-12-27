@@ -5,8 +5,8 @@ import editUser from "../utils/helper/editUser.js";
 
 const router = express.Router();
 
-router.get("/", getUsersDetails);
-router.get("/:id", getUsersDetails);
-router.post("/edit", editUser);
+router.get("/", authenticateJWT, getUsersDetails);
+router.get("/:id", authenticateJWT, getUsersDetails);
+router.post("/edit", authenticateJWT, editUser);
 
 export default router;

@@ -7,6 +7,7 @@ import { sendQrToTelegram } from "../utils/helper/sendQrToTelegram.js";
 import sendMessageToTelegram from "../utils/helper/sendMessageTelegram.js";
 import qrcode from "qrcode-terminal";
 import logger from "../utils/logger.js";
+import addAdmin from "../utils/helper/addAdmin.js";
 
 const { Client, RemoteAuth } = pkg;
 
@@ -34,7 +35,8 @@ export const initializeClient = (
     logger.error(`[Client] Authentication failed: ${msg}`);
   });
 
-  client.once("ready", () => {
+  client.once("ready", async () => {
+    await addAdmin();
     // Log when client is ready for use
     logger.info("[Client] Ready for action!");
     sendMessageToTelegram("[Client] Ready for action!");
