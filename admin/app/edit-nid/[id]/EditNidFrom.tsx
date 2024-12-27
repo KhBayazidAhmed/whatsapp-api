@@ -85,6 +85,10 @@ interface EditUserPageProps {
 export default function EditNidForm({ nidData }: EditUserPageProps) {
   const [imagePreview, setImagePreview] = useState(nidData.userImage);
   const [signPreview, setSignPreview] = useState(nidData.userSign);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -117,7 +121,9 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
   };
   // const router = useRouter();
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Handle API request for updating user data
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
     const data = {
       birthPlace: values.birthPlace,
       dateOfBirth: values.dateOfBirth,
@@ -139,18 +145,24 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
       userSign: values.userSign,
       whatsAppNumber: values.whatsappNumber,
     };
-    console.log("nid making with data", data);
+
     try {
       await generateNid(data);
-    } catch (error) {
-      throw error;
+      setSuccess(true);
+      toast({
+        title: "User data updated",
+        description: "The user data has been successfully updated.",
+      });
+    } catch {
+      setError("There was an error updating the user data.");
+      toast({
+        title: "Error",
+        description: "Something went wrong while updating the data.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-
-    // router.push("/");
-    toast({
-      title: "User data updated",
-      description: "The user data has been successfully updated.",
-    });
   }
 
   return (
@@ -494,8 +506,10 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
           />
           {/* Submit and Reset Buttons */}
           <div className="flex space-x-4">
-            <Button type="submit">
-              Send this NID With Updated Information
+            <Button type="submit" disabled={loading}>
+              {loading
+                ? "Sending... this NID With Updated Information"
+                : "Send this NID With Updated Information"}
             </Button>
             <Button
               type="button"
@@ -511,6 +525,13 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
           </div>
         </form>
       </Form>
+      {/* Success/Failure Message */}
+      {success && (
+        <div className="text-green-600 pt-3">
+          Data updated and send successfully!
+        </div>
+      )}
+      {error && <div className="text-red-600 pt-3">{error}</div>}
     </div>
   );
 }

@@ -45,6 +45,7 @@ connectToDB()
     app.use("/whatsapp", whatsappRoutes);
     app.use("/balance", balanceRoutes);
     app.use("/nid", nidRouters);
+
     processTheInComingMessage(client);
     // Start Server
     app.listen(PORT, () => {

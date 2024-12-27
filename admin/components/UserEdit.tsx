@@ -1,4 +1,5 @@
 "use client";
+
 import { balanceAdd } from "@/app/action/balanceAdd";
 import { Button } from "./ui/button";
 import {
@@ -12,8 +13,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import SubmitButton from "./SubmitButton";
+import { useActionState } from "react";
 import editUser from "@/app/action/editUser";
+
 interface User {
   _id: string;
   name: string;
@@ -22,6 +24,7 @@ interface User {
   balance: number;
   price: number;
 }
+
 export default function UserEdit({ user }: { user: User }) {
   return (
     <div className="flex items-center justify-end gap-3">
@@ -34,16 +37,19 @@ export default function UserEdit({ user }: { user: User }) {
     </div>
   );
 }
+
 function UserEditButton({ user }: { user: User }) {
+  const [state, formAction, isPending] = useActionState(editUser, null);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">Edit Profile</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <form action={editUser}>
+        <form action={formAction}>
           <DialogHeader>
-            <DialogTitle className="text-center">Edit profile</DialogTitle>
+            <DialogTitle className="text-center">Edit Profile</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -99,14 +105,20 @@ function UserEditButton({ user }: { user: User }) {
             </div>
           </div>
           <DialogFooter>
-            <SubmitButton />
-            {/* <Button type="submit">Save changes</Button> */}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Saving..." : "Save Changes"}
+            </Button>
           </DialogFooter>
+          {state?.message && (
+            <p className="text-green-500 mt-2">{state.message}</p>
+          )}
+          {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
         </form>
       </DialogContent>
     </Dialog>
   );
 }
+
 function UserAddBalanceButton({
   _id,
   currentBalance,
@@ -114,17 +126,20 @@ function UserAddBalanceButton({
   _id: string;
   currentBalance: number;
 }) {
+  const [state, formAction, isPending] = useActionState(balanceAdd, null);
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="default">Add Balance</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <form action={balanceAdd}>
+        <form action={formAction}>
           <DialogHeader>
             <DialogTitle>Add Balance</DialogTitle>
             <DialogDescription>
-              Current Balance = {currentBalance}
+              Current Balance:{" "}
+              <span className="font-semibold">{currentBalance}</span>
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -134,17 +149,24 @@ function UserAddBalanceButton({
               </Label>
               <Input
                 id="balance"
-                defaultValue="add balance"
                 className="col-span-3"
                 type="number"
                 name="amount"
+                placeholder="Enter amount"
+                disabled={isPending}
               />
             </div>
           </div>
-          <input hidden name="id" type="id" defaultValue={_id} />
+          <input hidden name="id" type="text" defaultValue={_id} />
           <DialogFooter>
-            <SubmitButton />
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Adding..." : "Add Balance"}
+            </Button>
           </DialogFooter>
+          {state?.message && (
+            <p className="text-green-500 mt-2">{state.message}</p>
+          )}
+          {state?.error && <p className="text-red-500 mt-2">{state.error}</p>}
         </form>
       </DialogContent>
     </Dialog>
