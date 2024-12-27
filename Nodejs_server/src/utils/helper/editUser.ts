@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../../db/user.model.js";
+import logger from "../logger.js";
 
 export default async function editUser(req: Request, res: Response) {
   try {
@@ -20,16 +21,8 @@ export default async function editUser(req: Request, res: Response) {
     // Find and update user by _id
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      {
-        name,
-        whatsAppNumber,
-        price,
-        balance,
-      },
-      {
-        new: true,
-        select: "-password", // exclude the password field
-      } // return the updated document
+      { name, whatsAppNumber, price, balance },
+      { new: true, select: "-password" }
     );
 
     // If user is not found
@@ -43,10 +36,12 @@ export default async function editUser(req: Request, res: Response) {
       message: "User updated successfully.",
       user: updatedUser,
     });
-    return;
   } catch (error) {
-    console.error(error);
+    // Log any errors encountered
+    logger.error(
+      `[EditUser] Error occurred while updating user with ID: ${req.body.id}`,
+      { error }
+    );
     res.status(500).json({ message: "Internal server error." });
-    return;
   }
 }

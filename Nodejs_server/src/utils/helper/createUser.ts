@@ -1,13 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { User } from "../../db/user.model.js";
 import { IUser } from "../../db/user.model.js";
+import logger from "../logger.js";
 
 export async function createUser(req: Request, res: Response): Promise<void> {
   try {
     const { name, whatsAppNumber, password, price } = req.body;
 
+    // Log the incoming request data (minimal log)
+    logger.debug(
+      `[CreateUser] Incoming request to create user with WhatsApp number: ${whatsAppNumber}`
+    );
+
     // Validate required fields
     if (!name || !whatsAppNumber) {
+      logger.warn(
+        "[CreateUser] Validation failed: Missing name or WhatsApp number."
+      );
       res.status(400).json({ message: "Name, WhatsApp number are required." });
       return;
     }
@@ -34,6 +43,9 @@ export async function createUser(req: Request, res: Response): Promise<void> {
     // Save to the database
     await user.save();
 
+    // Log successful creation (minimal log)
+    logger.info(`[CreateUser] User created: ${whatsAppNumber}`);
+
     // Respond with success
     res.status(201).json({
       message: "User created successfully.",
@@ -47,8 +59,11 @@ export async function createUser(req: Request, res: Response): Promise<void> {
         updatedAt: user.updatedAt,
       },
     });
-  } catch (error) {
-    console.error("Error creating user:", error);
+  } catch (error: any) {
+    // Log the error
+    logger.error(`[CreateUser] Error creating user: ${error.message}`, {
+      error,
+    });
     res
       .status(500)
       .json({ message: "Internal server error. Please try again later." });

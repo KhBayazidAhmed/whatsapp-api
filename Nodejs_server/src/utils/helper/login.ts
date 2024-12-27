@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../../db/user.model.js";
 import { IUser } from "../../db/user.model.js";
+import logger from "../logger.js";
 
 // The JWT secret should be stored in an environment variable for security
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
@@ -27,7 +28,6 @@ export async function login(req: Request, res: Response): Promise<void> {
 
     // Compare the provided password with the hashed password in the database
     const isMatch = await user.comparePassword(password);
-    console.log(isMatch);
     if (!isMatch) {
       res.status(401).json({ message: "Invalid WhatsApp number or password" });
       return;
@@ -51,7 +51,11 @@ export async function login(req: Request, res: Response): Promise<void> {
       token,
     });
   } catch (error) {
-    console.error("Error during login:", error);
+    // Log error during the login process
+    logger.error(
+      `[Login] Error during login for WhatsApp number: ${req.body.whatsAppNumber}`,
+      { error }
+    );
     res.status(500).json({ message: "Internal server error" });
   }
 }

@@ -1,4 +1,5 @@
 import getAddressString from "./helper/makingAddress.js";
+import logger from "./logger.js";
 
 type Address = {
   division: string;
@@ -76,32 +77,34 @@ export type ParsedData = {
 function formatTheString(data: string): ParsedData {
   // Helper function to extract data between start and end strings
   let string = data;
+
   const extractData = (
     start: string,
     end: string,
     sliceFrom = 0
   ): string | null => {
-    const startIndex = string.indexOf(start, sliceFrom); // Find the start index
-    const endIndex = string.indexOf(end, startIndex); // Find the end index
-    if (startIndex === -1 || endIndex === -1) return null; // Return null if start or end is not found
+    const startIndex = string.indexOf(start, sliceFrom);
+    const endIndex = string.indexOf(end, startIndex);
+    if (startIndex === -1 || endIndex === -1) return null;
     return string
-      .slice(startIndex + start.length, endIndex) // Extract data between start and end
-      .trim() // Remove leading/trailing spaces
-      .replaceAll("\n", " "); // Replace newlines with spaces
+      .slice(startIndex + start.length, endIndex)
+      .trim()
+      .replaceAll("\n", " ");
   };
+
   const extractDataForNid = (
     start: string,
     end: string,
     sliceFrom = 0
   ): string => {
-    const startIndex = string.indexOf(start, sliceFrom); // Find the start index
-    const endIndex = string.indexOf(end, startIndex); // Find the end index
+    const startIndex = string.indexOf(start, sliceFrom);
+    const endIndex = string.indexOf(end, startIndex);
     return string
-      .slice(startIndex + start.length, endIndex) // Extract data between start and end
-      .trim() // Remove leading/trailing spaces
-      .replaceAll("\n", " "); // Replace newlines with spaces
+      .slice(startIndex + start.length, endIndex)
+      .trim()
+      .replaceAll("\n", " ");
   };
-  // Parse Address fields (handles both Present and Permanent Address)
+
   const parsePresentAddress = (): Address => {
     return {
       division: extractData(`Division`, "District") || "",
@@ -113,11 +116,11 @@ function formatTheString(data: string): ParsedData {
       unionWard: extractData(`Union/Ward`, "Mouza/Moholla") || "",
       mouzaMoholla:
         extractData(`Mouza/Moholla`, "Additional\nMouza/Moholla") === "-"
-          ? "" // If the value is "-", return empty string
+          ? ""
           : extractData(`Mouza/Moholla`, "Additional\nMouza/Moholla") || "",
       additionalMouzaMoholla:
         extractData(`Additional\nMouza/Moholla`, "Ward For") === "-"
-          ? "" // If the value is "-", return empty string
+          ? ""
           : extractData(`Additional\nMouza/Moholla`, "Ward For") || "",
       wardForUnionPorishod:
         extractData(`Ward For\nUnion\nPorishod`, "Village/Road") || "",
@@ -131,6 +134,7 @@ function formatTheString(data: string): ParsedData {
       region: extractData(`Region`, "Permanent Address") || "",
     };
   };
+
   const parsePermanentAddress = (): Address => {
     string = string.slice(string.indexOf("Permanent Address"));
     return {
@@ -143,11 +147,11 @@ function formatTheString(data: string): ParsedData {
       unionWard: extractData(`Union/Ward`, "Mouza/Moholla") || "",
       mouzaMoholla:
         extractData(`Mouza/Moholla`, "Additional\nMouza/Moholla") === "-"
-          ? "" // If the value is "-", return empty string
+          ? ""
           : extractData(`Mouza/Moholla`, "Additional\nMouza/Moholla") || "",
       additionalMouzaMoholla:
         extractData(`Additional\nMouza/Moholla`, "Ward For") === "-"
-          ? "" // If the value is "-", return empty string
+          ? ""
           : extractData(`Additional\nMouza/Moholla`, "Ward For") || "",
       wardForUnionPorishod:
         extractData(`Ward For\nUnion\nPorishod`, "Village/Road") || "",
@@ -164,6 +168,7 @@ function formatTheString(data: string): ParsedData {
         "",
     };
   };
+
   const voterAt = data.match(/Voter At\n(.*)/)?.[1] || "";
 
   return {
@@ -191,7 +196,6 @@ function formatTheString(data: string): ParsedData {
     occupation: extractData("Occupation", "Disability"),
     disability: extractData("Disability", "Disability Other"),
     disabilityOther: extractData("Disability Other", "Present Address"),
-    // Parsing Present and Permanent addresses using the parseAddress function
     presentAddress: parsePresentAddress(),
     nidPresentAddress: getAddressString(parsePresentAddress()),
     nidAddress:
@@ -226,7 +230,6 @@ function formatTheString(data: string): ParsedData {
     noFinger: extractData("No Finger", "No Finger Print"),
     noFingerPrint: extractData("No Finger Print", "Voter Area"),
     voterArea: extractData("Voter Area", "Voter At"),
-    // Special case: Extract voterAt using regex as a fallback
     voterAt,
   };
 }
@@ -234,9 +237,10 @@ function formatTheString(data: string): ParsedData {
 function getDateFormat(dateString: string | null): string {
   if (!dateString) return "";
   const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, "0"); // Ensure 2-digit day
-  const month = date.toLocaleString("default", { month: "short" }); // Abbreviated month
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("default", { month: "short" });
   const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 }
+
 export default formatTheString;

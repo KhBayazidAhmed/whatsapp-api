@@ -10,6 +10,7 @@ import { WhatsAppClient } from "./types/index.js";
 import { initializeClient } from "./config/whatsappClient.js";
 import { IUser } from "./db/user.model.js";
 import processTheInComingMessage from "./controller/processTheInComingMessage.js";
+import logger from "./utils/logger.js";
 
 // Extend Request type to include WhatsAppClient
 declare global {
@@ -32,7 +33,9 @@ app.use(express.json({ limit: "50mb" }));
 // Connect to MongoDB and Initialize WhatsApp Client
 connectToDB()
   .then((mongoose) => {
+    logger.info(`Connected to MongoDB successfully.`);
     const client = initializeClient(mongoose);
+
     // Middleware to make client available in routes
     app.use((req: Request, res: Response, next: NextFunction) => {
       req.whatsappClient = client;
@@ -46,12 +49,14 @@ connectToDB()
     app.use("/balance", balanceRoutes);
     app.use("/nid", nidRouters);
 
+    // Process Incoming Messages
     processTheInComingMessage(client);
+
     // Start Server
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      logger.info(`Server is running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Error starting application: ", err);
+    logger.error(`Error starting application: `, err);
   });

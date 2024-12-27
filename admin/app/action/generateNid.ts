@@ -9,7 +9,7 @@ type UserData = {
   nidAddress: string;
   bloodGroup?: string;
   birthPlace: string;
-  userImage: string;
+  userImage?: string;
   userSign?: string;
   dateOfBirth: string;
   pin: string;

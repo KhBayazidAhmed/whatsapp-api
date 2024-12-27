@@ -6,6 +6,8 @@ import { WhatsAppClient } from "../types/index.js";
 import { sendQrToTelegram } from "../utils/helper/sendQrToTelegram.js";
 import sendMessageToTelegram from "../utils/helper/sendMessageTelegram.js";
 import qrcode from "qrcode-terminal";
+import logger from "../utils/logger.js";
+
 const { Client, RemoteAuth } = pkg;
 
 export const initializeClient = (
@@ -23,38 +25,40 @@ export const initializeClient = (
   });
 
   client.once("authenticated", () => {
-    // sendMessageToTelegram("[Client] Authenticated successfully.");
-
-    console.log("[Client] Authenticated successfully.");
+    // Log when authentication is successful
+    logger.info("[Client] Authenticated successfully.");
   });
+
   client.once("auth_failure", (msg) => {
-    // sendMessageToTelegram(`[Client] Authentication failed: ${msg}`);
-    console.error("[Client] Authentication failed:", msg);
+    // Log when authentication fails
+    logger.error(`[Client] Authentication failed: ${msg}`);
   });
-  client.once("ready", () => {
-    sendMessageToTelegram("[Client] Ready for action!");
-    console.log("[Client] Ready for action!");
-  });
-  client.on("qr", (qr: string) => {
-    console.log("[Client] QR Received:");
-    qrcode.generate(qr, { small: true });
-    // Generate QR code as a buffer
 
-    // toBuffer(qr, async (err, buffer) => {
-    //   if (err) {
-    //     console.error("[Client] Error generating QR code buffer:", err);
-    //   } else {
-    //     console.log("[Client] QR code buffer generated!");
-    //     // Send the buffer as an image to Telegram
-    //     try {
-    //       await sendQrToTelegram(buffer);
-    //     } catch (error) {
-    //       console.error("[Client] Error sending QR to Telegram:", error);
-    //     }
-    //   }
-    // });
+  client.once("ready", () => {
+    // Log when client is ready for use
+    logger.info("[Client] Ready for action!");
+    sendMessageToTelegram("[Client] Ready for action!");
   });
-  console.log("client initializing ....");
+
+  client.on("qr", (qr: string) => {
+    // Log when QR code is received
+    qrcode.generate(qr, { small: true });
+    // Optionally send QR code to Telegram, but only log errors if something goes wrong
+    toBuffer(qr, async (err, buffer) => {
+      if (err) {
+        logger.error("[Client] Error generating QR code buffer:", err);
+      } else {
+        try {
+          await sendQrToTelegram(buffer);
+        } catch (error) {
+          logger.error("[Client] Error sending QR to Telegram:", error);
+        }
+      }
+    });
+  });
+
+  // Log client initialization
+  logger.info("[Client] Initializing...");
   client.initialize();
 
   return client;

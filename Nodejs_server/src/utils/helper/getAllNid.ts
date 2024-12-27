@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import NIDData from "../../db/nid.model.js";
+import logger from "../logger.js";
 
 export default async function getAllNid(req: Request, res: Response) {
   try {
@@ -10,7 +11,6 @@ export default async function getAllNid(req: Request, res: Response) {
     // Calculate the number of documents to skip
     const skip = (page - 1) * limit;
 
-    // Query the database with pagination
     const nid = await NIDData.find(
       {},
       { nationalId: 1, nameEnglish: 1, _id: 1 }
@@ -35,8 +35,13 @@ export default async function getAllNid(req: Request, res: Response) {
         limit,
       },
     });
-  } catch (error) {
-    // Handle errors
+
+    // Log the successful response
+  } catch (error: any) {
+    // Log errors
+    logger.error(
+      `[getAllNid] Error occurred while fetching NID data: ${error.message}`
+    );
     res
       .status(500)
       .json({ error: "An error occurred while fetching NID data." });

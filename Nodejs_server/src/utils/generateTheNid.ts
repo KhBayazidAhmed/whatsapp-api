@@ -1,6 +1,6 @@
-import { ParsedData } from "./formatTheString.js";
 import { Client } from "whatsapp-web.js";
 import path from "path";
+import logger from "./logger.js";
 
 type UserData = {
   nameEnglish: string;
@@ -27,24 +27,21 @@ export default async function generatePDF(
   userData: UserData,
   client: Client
 ): Promise<string> {
-  console.log("Starting PDF generation...");
   const __dirname = path.resolve();
   const page = client?.pupBrowser?.newPage
     ? await client?.pupBrowser?.newPage()
     : null;
+
   if (!page) {
-    console.error("Failed to create a new Puppeteer page.");
+    logger.error("Failed to create a new Puppeteer page.");
     throw new Error("Failed to create a new Puppeteer page.");
   }
 
   try {
-    console.log("Opening HTML template...");
     const filePath = path.resolve(__dirname, "./htmlNidTemplate/index.html");
     await page.goto(`file://${filePath}`, { waitUntil: "networkidle0" });
-    console.log("HTML template loaded, starting to inject user data...");
 
     await page.evaluate((user) => {
-      console.log("Injecting user data into the template...");
       document.getElementById("nameEnglish")!.innerHTML =
         user.nameEnglish.replaceAll("\n", " ");
       document.getElementById("nameBangla")!.innerHTML =
@@ -76,7 +73,6 @@ export default async function generatePDF(
 
       // Barcode generation
       if (typeof window.barCodeGenerateForNid === "function") {
-        console.log("Generating barcode for NID...");
         window.barCodeGenerateForNid(
           `<pin>${user.pin}</pin><name>${user.nameEnglish}</name><DOB>${user.dateOfBirth}</DOB><FP></FP><F>Right Index</F><TYPE></TYPE><V>2.0</V> <ds>302c0214103fc01240542ed736c0b48858c1c03d80006215021416e73728de9618fedcd368c88d8f3a2e72096d</ds>`
         );
@@ -100,31 +96,24 @@ export default async function generatePDF(
 
           // Prevent infinite loop if text cannot fit
           if (fontSize <= 0.1) {
-            console.warn(
-              "Font size reached the minimum limit (0.1pt); text may not fit."
-            );
             break;
           }
         }
       }
 
       // Apply the function to the containers and elements
-      console.log("Fitting text to containers...");
       fitTextToContainer("english_name_container", "nameEnglish");
       fitTextToContainer("bangla_name_container", "nameBangla");
     }, userData);
 
-    console.log("Rendering PDF...");
     const pdfBuffer: Buffer = await page.pdf({
       omitBackground: true,
     });
-    console.log("PDF generated successfully.");
     return pdfBuffer.toString("base64");
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    logger.error("Error generating PDF:", error);
     throw error;
   } finally {
-    console.log("Closing Puppeteer page...");
     await page.close();
   }
 }

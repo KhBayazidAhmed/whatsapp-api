@@ -58,8 +58,8 @@ export const formSchema = z.object({
   birthPlace: z
     .string()
     .min(2, { message: "Birth place must be at least 2 characters." }),
-  userImage: z.string(),
-  userSign: z.string(),
+  userImage: z.string().optional(),
+  userSign: z.string().optional(),
   voterNo: z.string(),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
     message: "Please enter a valid date in YYYY-MM-DD format.",
@@ -84,7 +84,7 @@ interface EditUserPageProps {
 
 export default function EditNidForm({ nidData }: EditUserPageProps) {
   const [imagePreview, setImagePreview] = useState(nidData.userImage);
-  const [signPreview, setSignPreview] = useState(nidData.userSign);
+  const [signPreview, setSignPreview] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -99,7 +99,7 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
   });
   const handleImageChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    setPreview: React.Dispatch<React.SetStateAction<string>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | undefined>>,
     fieldName: keyof z.infer<typeof formSchema>
   ) => {
     const file = e.target.files?.[0];
@@ -414,12 +414,13 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
                         <FaCloudUploadAlt />
                         <span>Upload Signature</span>
                       </label>
+
                       <Input
                         id="userSign"
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleImageChange(e, setSignPreview, field.name)
                         }
                       />
