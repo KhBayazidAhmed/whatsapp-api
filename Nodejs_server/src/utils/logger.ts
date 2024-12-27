@@ -1,10 +1,7 @@
 import winston from "winston";
 import "winston-mongodb";
 
-const mongoDBUri =
-  process.env.MONGODB_URI ||
-  "mongodb://root:biz@127.0.0.1:27017/nid-create?authSource=admin";
-
+const mongoDBUri = process.env.MONGODB_URI;
 if (!mongoDBUri) {
   console.error("Please define the MONGODB_URI environment variable.");
   process.exit(1);

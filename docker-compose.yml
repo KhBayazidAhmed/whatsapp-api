@@ -22,6 +22,10 @@ services:
       - IMAGE_API_URL=http://image_api:4000
       - PYTHON_URL=http://python_app:8000
       - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
+      - TELEGRAM_BOT_TOKEN=8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM
+      - TELEGRAM_CHAT_ID="-7443568056"
+      
+
     volumes:
       - ./Nodejs_server/htmlNidTemplate:/app/htmlNidTemplate
   python_app:
@@ -33,6 +37,8 @@ services:
     environment:
       - FLASK_ENV=production
       - PORT=8000
+
+      
   admin:
     build: ./admin
     ports:
@@ -43,6 +49,7 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
+      - API_BASE_URL=http://puppeteer_app:4000
       
   mongo:
     image: mongo

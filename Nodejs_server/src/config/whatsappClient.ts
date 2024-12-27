@@ -16,7 +16,10 @@ export const initializeClient = (
 ): WhatsAppClient => {
   const store = new MongoStore({ mongoose: mongooseInstance });
   const client = new Client({
-    puppeteer: { headless: true },
+    puppeteer: {
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    },
     authStrategy: new RemoteAuth({
       clientId: "client-user-new",
       store: store,
