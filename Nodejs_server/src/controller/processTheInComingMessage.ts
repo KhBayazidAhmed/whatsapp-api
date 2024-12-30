@@ -56,16 +56,13 @@ export default function processTheInComingMessage(client: Client) {
         return;
       }
       // Fetch the user atomically to avoid concurrency issues
-      const user = await User.findOneAndUpdate(
-        { whatsAppNumber: msg.from },
-        { $setOnInsert: { balance: 0 } }, // Ensures a default balance if user is new
-        { upsert: true, new: true }
-      ).exec();
+      const user = await User.findOne({ whatsAppNumber: msg.from }).exec();
 
       if (!user) {
         logger.warn(`User not found for WhatsApp number: ${msg.from}`);
         return;
       }
+
       if (!user.isActive) {
         logger.warn(`User is inactive: ${msg.from}`);
         await msg.reply("Your account is inactive. Please activate it.");

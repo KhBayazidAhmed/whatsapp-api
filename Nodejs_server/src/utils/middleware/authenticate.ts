@@ -26,10 +26,7 @@ export const authenticateJWT = (
     // Log the attempt to verify the token
 
     // Verify the token and extract user info
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "your-secret-key"
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
     // Attach user info to request object
     req.user = decoded as IUser;
 

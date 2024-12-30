@@ -16,7 +16,7 @@ const fetchImagesWithRetry = async (
   pdfBase64: string,
   retries: number = 3
 ): Promise<apiResponseImagExtraction | null> => {
-  const IMAGE_API_URL = process.env.IMAGE_API_URL || "http://127.0.0.1:4000";
+  const IMAGE_API_URL = process.env.IMAGE_API_URL;
 
   let attempt = 0;
   while (attempt < retries) {

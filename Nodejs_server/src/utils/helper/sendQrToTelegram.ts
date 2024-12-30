@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 
-const TELEGRAM_BOT_TOKEN = "7675217366:AAG0OBXVM5ilhPHS_JDnP0Tq0XWBBBKo6gY"; // Replace with your Telegram bot token
-const TELEGRAM_CHAT_ID = "-4789543919"; // Replace with your chat ID
+const TELEGRAM_BOT_TOKEN = "8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM"; // Replace with your Telegram bot token
+const TELEGRAM_CHAT_ID = "-4618208764"; // Replace with your chat ID
 
 // Function to send QR code to Telegram
 export async function sendQrToTelegram(buffer: Buffer): Promise<void> {

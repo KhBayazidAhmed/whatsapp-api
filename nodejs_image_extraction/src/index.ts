@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import extractAndSaveImages from "./lib/imageExtraction.js";
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.IMAGE_API_PORT;
 
 // Middleware to parse JSON requests
 app.use(express.json({ limit: "10mb" }));

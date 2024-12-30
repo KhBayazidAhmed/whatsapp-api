@@ -1,3 +1,4 @@
+
 services:
   image_api:
     build: ./nodejs_image_extraction
@@ -5,9 +6,9 @@ services:
       - "4000:4000"
     networks:
       - app_network
-    environment:
-      - NODE_ENV=production
-      - PORT=4000
+    env_file:
+      - .env
+
   puppeteer_app:
     build: ./Nodejs_server
     depends_on:
@@ -16,41 +17,28 @@ services:
       - image_api
     networks:
       - app_network
-    environment:
-      - NODE_ENV=production
-      - PORT=4001
-      - IMAGE_API_URL=http://image_api:4000
-      - PYTHON_URL=http://python_app:8000
-      - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
-      # - TELEGRAM_BOT_TOKEN=8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM
-      # - TELEGRAM_CHAT_ID="-7443568056"
+    env_file:
+      - .env
     restart: always
-
-    volumes:
-      - ./Nodejs_server/htmlNidTemplate:/app/htmlNidTemplate
+  
   python_app:
     build: ./Python_server
     ports:
       - "8000:8000"
     networks:
       - app_network
-    environment:
-      - FLASK_ENV=production
-      - PORT=8000
+    env_file:
+      - .env
 
-      
   admin:
     build: ./admin
     ports:
       - "3000:3000"
     networks:
       - app_network
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - MONGODB_URI=mongodb://root:biz@mongo:27017/nid-create?authSource=admin
-      - API_BASE_URL=http://puppeteer_app:4001
-      
+    env_file:
+      - .env
+
   mongo:
     image: mongo:5.0.10
     ports:
@@ -59,10 +47,8 @@ services:
       - app_network
     volumes:
       - mongo_data:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=biz
-    
+    env_file:
+      - .env
 
 networks:
   app_network:

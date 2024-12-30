@@ -24,7 +24,7 @@ declare global {
 }
 
 // Constants
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PUPPETEER_APP_PORT || 4001;
 
 // Initialize Express
 const app = express();

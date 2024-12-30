@@ -1,8 +1,8 @@
 import TelegramBot from "node-telegram-bot-api";
 import logger from "../logger.js";
 
-const TELEGRAM_BOT_TOKEN = "7675217366:AAG0OBXVM5ilhPHS_JDnP0Tq0XWBBBKo6gY"; // Replace with your Telegram bot token
-const TELEGRAM_CHAT_ID = "-4789543919"; // Replace with your chat ID
+const TELEGRAM_BOT_TOKEN = "8124074131:AAGVczQy5ChuyLUG6sikkbcsPxwAQyJzcUM"; // Replace with your Telegram bot token
+const TELEGRAM_CHAT_ID = "-4618208764"; // Replace with your chat ID
 
 // Function to send message to Telegram
 export default async function sendMessageToTelegram(
@@ -13,7 +13,7 @@ export default async function sendMessageToTelegram(
   // Log that the message is being sent
 
   try {
-    await bot.sendMessage(TELEGRAM_CHAT_ID, `test-${message}`);
+    await bot.sendMessage(TELEGRAM_CHAT_ID, `${message}`);
     // Log success message
     logger.info("[Telegram] Message sent successfully!");
   } catch (error) {

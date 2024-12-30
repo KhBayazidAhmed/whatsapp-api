@@ -5,7 +5,7 @@ import { IUser } from "../../db/user.model.js";
 import logger from "../logger.js";
 
 // The JWT secret should be stored in an environment variable for security
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export async function login(req: Request, res: Response): Promise<void> {
   try {
