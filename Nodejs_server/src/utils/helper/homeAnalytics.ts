@@ -49,8 +49,7 @@ export const homeAnalytics = async (req: Request, res: Response) => {
     const totalAddedBalance = await BalanceTransition.aggregate([
       {
         $match: {
-          transactionDate: { $gte: startOfDay, $lte: endOfDay }, // Match on 'transactionDate' field
-          type: "recharge", // Ensure you're summing only 'recharge' transactions
+          type: "recharge",
         },
       },
       {
@@ -68,7 +67,6 @@ export const homeAnalytics = async (req: Request, res: Response) => {
       console.error("Error fetching total NID count:", err);
       return 0;
     });
-    console.log("total added balance", totalAddedBalance);
     // Send response
     res.status(200).json({
       success: true,
@@ -76,7 +74,7 @@ export const homeAnalytics = async (req: Request, res: Response) => {
       data: [
         {
           title: "Total Added Balance",
-          value: `${totalAddedBalance[0]?.totalAddedBalance.toFixed(2)}`,
+          value: `${totalAddedBalance[0]?.totalAddedBalance.toFixed(2) || 0}`,
         },
         {
           title: "Total Balance",

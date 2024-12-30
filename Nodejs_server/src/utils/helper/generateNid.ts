@@ -42,14 +42,18 @@ export default async function generateNid(req: Request, res: Response) {
     // Check if any required field is missing
     for (const field of requiredFields) {
       if (!data[field]) {
-        logger.warn(`[generateNid] Missing required field: ${field}`);
+        logger.warn(
+          `[generateNid] Missing required field: ${field} for NID ${data.nationalId}`
+        );
         res.status(400).json({ error: `${field} is required` });
         return;
       }
     }
 
     logger.info(
-      "[generateNid] All required fields are present. Generating PDF..."
+      "[generateNid] All required fields are present. Generating PDF... " +
+        "of user whatsAppNumber:" +
+        data.whatsAppNumber
     );
 
     // Generate the NID PDF
@@ -62,7 +66,7 @@ export default async function generateNid(req: Request, res: Response) {
     const media = new MessageMedia(
       "application/pdf",
       nidPdf,
-      `Nid-${data.nationalId}.pdf`
+      `nid-${data.nationalId}.pdf`
     );
 
     // Send the PDF via WhatsApp

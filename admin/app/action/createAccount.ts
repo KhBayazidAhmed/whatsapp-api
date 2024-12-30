@@ -13,6 +13,12 @@ export async function createAccountAction(
   if (!token) {
     redirect("/login");
   }
+  const name = formData.get("name");
+  const whatsAppNumber = formData.get("whatsAppNumber") as string;
+  const price = formData.get("price");
+  if (!name || !whatsAppNumber) {
+    return { error: "All fields are required" };
+  }
   try {
     const response = await fetch(
       `${process.env.API_BASE_URL}/auth/create-user`,
@@ -23,15 +29,18 @@ export async function createAccountAction(
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name: formData.get("name"),
-          whatsAppNumber: formData.get("whatsAppNumber"),
-          password: formData.get("password"),
-          price: formData.get("price"),
+          name,
+          whatsAppNumber: whatsAppNumber.trim(),
+          price,
         }),
         credentials: "same-origin",
       }
     );
-
+    if (!response.ok) {
+      return {
+        error: "Failed to create account",
+      };
+    }
     const data = await response.json();
     if (data.failedAuth) {
       redirect("/login");
@@ -43,7 +52,6 @@ export async function createAccountAction(
     return { message: "Account created successfully" };
   } catch (error) {
     console.error("Error creating account:", error);
-
     return {
       error:
         error instanceof Error ? error.message : "An unexpected error occurred",

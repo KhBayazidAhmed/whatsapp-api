@@ -19,6 +19,7 @@ export default async function getAllNid(req: Request, res: Response) {
         path: "user",
         select: "whatsAppNumber",
       })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 

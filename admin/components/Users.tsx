@@ -17,6 +17,7 @@ interface User {
   role: "user" | "admin";
   balance: number;
   price: number;
+  isActive: boolean;
 }
 async function getUsers() {
   const token = (await cookies()).get("token")?.value;
@@ -54,7 +55,8 @@ export default async function Users() {
               <TableHead>whatsAppNumber</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Balance</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,6 +67,9 @@ export default async function Users() {
                 <TableCell>{entry.whatsAppNumber}</TableCell>
                 <TableCell>{entry.role}</TableCell>
                 <TableCell>{entry.balance}</TableCell>
+                <TableCell>
+                  {entry.isActive ? "Active" : "Deactivated"}
+                </TableCell>
                 <TableCell className="text-right">
                   <UserEdit user={entry} />
                 </TableCell>

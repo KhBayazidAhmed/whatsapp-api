@@ -24,7 +24,11 @@ export async function addBalance(req: Request, res: Response): Promise<void> {
 
     // Log the current balance before update
     logger.info(
-      `[addBalance] Current balance for user ID: ${id} is ${user.balance}`
+      `[addBalance] Current balance for user what'sApp number: ${
+        user.whatsAppNumber
+      } is ${user.balance} before adding ${amount} after adding balance ${
+        user.balance + amount
+      }`
     );
 
     await BalanceTransition.create({
@@ -37,10 +41,13 @@ export async function addBalance(req: Request, res: Response): Promise<void> {
     user.balance += amount;
     // Save updated user
     await user.save();
-
+    req.whatsappClient.sendMessage(
+      user.whatsAppNumber,
+      `Your balance has been updated to ${user.balance} after adding ${amount}!`
+    );
     // Log the updated balance
     logger.info(
-      `[addBalance] User ID: ${id} balance updated. New balance: ${user.balance}`
+      `[addBalance] User what'sApp number: ${user.whatsAppNumber} balance updated. New balance: ${user.balance}`
     );
 
     res.status(200).json({
@@ -50,7 +57,7 @@ export async function addBalance(req: Request, res: Response): Promise<void> {
   } catch (error: any) {
     // Log unexpected errors
     logger.error(
-      `[addBalance] Error adding balance for user ID: ${req.body.id}. Error: ${error.message}`
+      `[addBalance] Error adding balance for user ID: ${req.body.id}. Error: ${error.message} whatsAppNumber: ${req.body.whatsAppNumber}`
     );
     res.status(500).json({ message: "Internal server error" });
   }

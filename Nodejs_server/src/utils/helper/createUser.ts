@@ -15,7 +15,9 @@ export async function createUser(req: Request, res: Response): Promise<void> {
     // Validate required fields
     if (!name || !whatsAppNumber) {
       logger.warn(
-        "[CreateUser] Validation failed: Missing name or WhatsApp number."
+        "[CreateUser] Validation failed: Missing name or WhatsApp number." +
+          "whatsAppNumber:" +
+          whatsAppNumber
       );
       res.status(400).json({ message: "Name, WhatsApp number are required." });
       return;
@@ -42,6 +44,10 @@ export async function createUser(req: Request, res: Response): Promise<void> {
 
     // Save to the database
     await user.save();
+    req.whatsappClient.sendMessage(
+      whatsAppNumber,
+      `Hello ${name}, your account has been created successfully. for more details send message "/profile"`
+    );
 
     // Log successful creation (minimal log)
     logger.info(`[CreateUser] User created: ${whatsAppNumber}`);

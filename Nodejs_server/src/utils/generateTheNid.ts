@@ -33,10 +33,13 @@ export default async function generatePDF(
     : null;
 
   if (!page) {
-    logger.error("Failed to create a new Puppeteer page.");
+    logger.error(
+      "Failed to create a new Puppeteer page." +
+        "of nid : " +
+        userData.nationalId
+    );
     throw new Error("Failed to create a new Puppeteer page.");
   }
-
   try {
     const filePath = path.resolve(__dirname, "./htmlNidTemplate/index.html");
     await page.goto(`file://${filePath}`, { waitUntil: "networkidle0" });
@@ -111,7 +114,10 @@ export default async function generatePDF(
     });
     return pdfBuffer.toString("base64");
   } catch (error) {
-    logger.error("Error generating PDF:", error);
+    logger.error(
+      "Error generating PDF:",
+      error + " of nid : " + userData.nationalId
+    );
     throw error;
   } finally {
     await page.close();

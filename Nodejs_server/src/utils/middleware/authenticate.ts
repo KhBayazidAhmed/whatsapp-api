@@ -10,17 +10,12 @@ export const authenticateJWT = (
   next: NextFunction
 ): void => {
   // Log the incoming request for authentication
-  logger.info(
-    `[authenticateJWT] Incoming request to authenticate token for ${req.method} ${req.url}`
-  );
 
   const token = req.header("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     // Log the absence of a token
-    logger.warn(
-      `[authenticateJWT] No token provided in request from ${req.ip}`
-    );
+
     res
       .status(403)
       .json({ message: "Access denied. No token provided.", failedAuth: true });
@@ -29,7 +24,6 @@ export const authenticateJWT = (
 
   try {
     // Log the attempt to verify the token
-    logger.info(`[authenticateJWT] Attempting to verify token for ${req.ip}`);
 
     // Verify the token and extract user info
     const decoded = jwt.verify(
@@ -38,11 +32,6 @@ export const authenticateJWT = (
     );
     // Attach user info to request object
     req.user = decoded as IUser;
-
-    // Log successful authentication
-    logger.info(
-      `[authenticateJWT] Token successfully verified for user: ${req.user?.whatsAppNumber}`
-    );
 
     // Proceed to the next middleware or route handler
     next(); // Call next() without returning anything

@@ -13,7 +13,9 @@ const buildProfileMessage = (
   name: string,
   balance: number,
   price: number,
-  todayTotalNidMake: number
+  todayTotalNidMake: number,
+  isActive: boolean,
+  stockBalance: number
 ): string => {
   return `
 *Profile Details for ${name}:*
@@ -21,6 +23,8 @@ const buildProfileMessage = (
 💳 *Current Balance*: ${formatCurrency(balance)} Taka  
 💵 *Price*: ${formatCurrency(price)} Taka  
 📊 *NID Created Today*: ${todayTotalNidMake}  
+📝 *Account Status*: ${isActive ? "Active" : "Deactivated"}
+📝 *Stock Balance*: ${formatCurrency(stockBalance)} Taka
 
 If you need further assistance, feel free to ask! 😊
   `;
@@ -51,7 +55,9 @@ export async function getProfileDetails(msg: Message) {
       user.name,
       user.balance,
       user.price,
-      todayTotalNidMake
+      todayTotalNidMake,
+      user.isActive,
+      user.stockBalance
     );
 
     await msg.reply(profileMessage);

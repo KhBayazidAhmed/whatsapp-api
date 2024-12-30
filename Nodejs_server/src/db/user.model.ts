@@ -10,6 +10,8 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   price: number;
+  isActive: boolean;
+  stockBalance: number;
   comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -35,11 +37,22 @@ const UserSchema = new Schema<IUser>(
       default: 5,
       min: [0, "Price cannot be negative"],
     },
+    isActive: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
     role: {
       type: String,
       required: true,
       enum: ["user", "admin"],
       default: "user",
+    },
+    stockBalance: {
+      type: Number,
+      required: true,
+      default: 0,
+      min: [0, "Stoke balance cannot be negative"],
     },
     balance: {
       type: Number,

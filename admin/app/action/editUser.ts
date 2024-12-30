@@ -24,6 +24,7 @@ export default async function editUser(_initial: any, formData: FormData) {
         whatsAppNumber: formData.get("whatsAppNumber"),
         price: formData.get("price"),
         balance: formData.get("balance"),
+        stockBalance: formData.get("stockBalance"),
       }),
     });
 

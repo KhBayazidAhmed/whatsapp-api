@@ -51,7 +51,9 @@ export async function sendMessage(req: Request, res: Response): Promise<void> {
     const failures = results.filter(
       (result) => "success" in result && result.success === false
     );
-
+    logger.info(
+      `[sendMessage] Number of success: ${successes.length}, Number of failure: ${failures.length}  and the message is ${message}`
+    );
     // Respond with success and failure counts
     res.status(200).json({
       success: successes.length,

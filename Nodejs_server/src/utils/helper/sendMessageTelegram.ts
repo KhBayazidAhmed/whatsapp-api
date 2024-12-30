@@ -13,7 +13,7 @@ export default async function sendMessageToTelegram(
   // Log that the message is being sent
 
   try {
-    await bot.sendMessage(TELEGRAM_CHAT_ID, message);
+    await bot.sendMessage(TELEGRAM_CHAT_ID, `test-${message}`);
     // Log success message
     logger.info("[Telegram] Message sent successfully!");
   } catch (error) {

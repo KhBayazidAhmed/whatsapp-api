@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w & nodemon dist/index.js"
+    "dev": "tsc -w &  nodemon dist/index.js"
   },
   "keywords": [],
   "author": "",

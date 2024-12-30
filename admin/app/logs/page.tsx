@@ -65,7 +65,12 @@ export default async function LogsPage() {
                 className={levelStyles[log.level] || levelStyles.default}
               >
                 <TableCell>
-                  {new Date(log.timestamp).toLocaleString()}
+                  {new Intl.DateTimeFormat("en-GB", {
+                    timeZone: "Asia/Dhaka",
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                    hour12: true,
+                  }).format(new Date(log.timestamp))}
                 </TableCell>
                 <TableCell>{log.level}</TableCell>
                 <TableCell>{log.message}</TableCell>

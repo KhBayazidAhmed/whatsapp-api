@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
 import editUser from "@/app/action/editUser";
+import ChangeStatus from "./ChangeStatus";
 
 interface User {
   _id: string;
@@ -23,17 +24,20 @@ interface User {
   role: "user" | "admin";
   balance: number;
   price: number;
+  isActive: boolean;
+  stockBalance: number;
 }
 
 export default function UserEdit({ user }: { user: User }) {
   return (
-    <div className="flex items-center justify-end gap-3">
+    <div className="flex items-center justify-center gap-3">
       <div>
         <UserEditButton user={user} />
       </div>
       <div>
         <UserAddBalanceButton _id={user._id} currentBalance={user.balance} />
       </div>
+      <ChangeStatus user={user} />
     </div>
   );
 }
@@ -105,6 +109,19 @@ function UserEditButton({ user }: { user: User }) {
                 name="price"
                 placeholder="price"
                 defaultValue={user.price}
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="stockBalance" className="text-right">
+                Stock Balance
+              </Label>
+              <Input
+                id="stockBalance"
+                className="col-span-3"
+                type="number"
+                name="stockBalance"
+                placeholder="stockBalance"
+                defaultValue={user.stockBalance}
               />
             </div>
           </div>

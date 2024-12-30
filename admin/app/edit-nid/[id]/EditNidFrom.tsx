@@ -84,7 +84,9 @@ interface EditUserPageProps {
 
 export default function EditNidForm({ nidData }: EditUserPageProps) {
   const [imagePreview, setImagePreview] = useState(nidData.userImage);
-  const [signPreview, setSignPreview] = useState<string | undefined>(undefined);
+  const [signPreview, setSignPreview] = useState<string | undefined>(
+    nidData.userSign
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);

@@ -24,12 +24,27 @@ declare global {
 }
 
 // Constants
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4001;
 
 // Initialize Express
 const app = express();
+
 // Middleware to parse JSON body
 app.use(express.json({ limit: "50mb" }));
+
+// Error Handling Middleware
+const errorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  logger.error("An error occurred:", err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+};
 
 // Connect to MongoDB and Initialize WhatsApp Client
 connectToDB()
@@ -54,11 +69,23 @@ connectToDB()
     // Process Incoming Messages
     processTheInComingMessage(client);
 
+    // 404 Handler
+    app.use((req, res) => {
+      res.status(404).json({
+        success: false,
+        message: "Route not found",
+      });
+    });
+
+    // Error Handling Middleware
+    app.use(errorHandler);
+
     // Start Server
     app.listen(PORT, () => {
       logger.info(`Server is running on http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    logger.error(`Error starting application: `, err);
+    logger.error(`Error starting application:`, err);
+    process.exit(1); // Exit the process if the connection to DB fails
   });

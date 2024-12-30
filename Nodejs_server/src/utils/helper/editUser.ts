@@ -4,24 +4,25 @@ import logger from "../logger.js";
 
 export default async function editUser(req: Request, res: Response) {
   try {
-    const { name, whatsAppNumber, price, id, balance } = req.body;
+    const { name, whatsAppNumber, price, id, balance, stockBalance } = req.body;
 
     // Validate required fields
-    if (!id || !name || !whatsAppNumber || !price || !balance) {
+    if (
+      !id ||
+      !name ||
+      !whatsAppNumber ||
+      !price ||
+      !balance ||
+      !stockBalance
+    ) {
       res.status(400).json({ message: "All fields are required." });
-      return;
-    }
-
-    // Validate price (ensure it is a positive number)
-    if (price <= 0) {
-      res.status(400).json({ message: "Price must be greater than 0." });
       return;
     }
 
     // Find and update user by _id
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { name, whatsAppNumber, price, balance },
+      { name, whatsAppNumber, price, balance, stockBalance },
       { new: true, select: "-password" }
     );
 
@@ -30,7 +31,9 @@ export default async function editUser(req: Request, res: Response) {
       res.status(404).json({ message: "User not found." });
       return;
     }
-
+    logger.info(
+      `[EditUser] User with ID: ${req.body.id} updated successfully. with data of name ${name}, whatsAppNumber: ${whatsAppNumber}, price: ${price}, balance: ${balance} and stockBalance: ${stockBalance}`
+    );
     // Return success response with the updated user data
     res.status(200).json({
       message: "User updated successfully.",
