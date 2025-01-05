@@ -2,8 +2,6 @@
 services:
   image_api:
     build: ./nodejs_image_extraction
-    ports:
-      - "4000:4000"
     networks:
       - app_network
     env_file:
@@ -20,11 +18,11 @@ services:
     env_file:
       - .env
     restart: always
+    volumes:
+      - ./Nodejs_server/htmlNidTemplate:/app/htmlNidTemplate
   
   python_app:
     build: ./Python_server
-    ports:
-      - "8000:8000"
     networks:
       - app_network
     env_file:
@@ -47,8 +45,9 @@ services:
       - app_network
     volumes:
       - mongo_data:/data/db
-    env_file:
-      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=biz
 
 networks:
   app_network:

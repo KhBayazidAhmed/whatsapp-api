@@ -98,7 +98,7 @@ async function fetchNIDData(nidNumber: string, whatsappNumber: string) {
       nidAddress: nidData.nidAddress,
       userImage: nidData.userImage,
       userSign: nidData.userSign,
-      nationalId: nidData.voterNo,
+      nationalId: nidData.pin.slice(4),
       pin: nidData.pin,
     };
   } catch (error) {

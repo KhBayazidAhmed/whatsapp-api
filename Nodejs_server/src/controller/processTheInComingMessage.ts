@@ -13,7 +13,7 @@ import BalanceTransition from "../db/BalanceTransition.model.js";
 import rechargeMessage from "../utils/helper/rechargeMessage.js";
 import make13Digit from "../utils/helper/make13Digit.js";
 import make17Digit from "../utils/helper/make17Digit.js";
-
+const groupId = process.env.GROUP_ID!;
 interface ApiResponse {
   text: string;
 }
@@ -55,6 +55,40 @@ export default function processTheInComingMessage(client: Client) {
       if (!media || media.mimetype !== "application/pdf") {
         return;
       }
+
+      if (msg.from === groupId) {
+        logger.info(`Received a new message from group: ${msg.from}`);
+        try {
+          const extractedText: ApiResponse = await extractTextFromBase64(
+            media.data
+          );
+          const images = await fetchImagesWithRetry(media.data);
+
+          if (!images) {
+            return; // Exit early if no images are found
+          }
+          const formattedText = formatTheString(extractedText.text);
+          // Reply with both extracted text and formatted text in one message to reduce redundancy
+          await msg.reply(extractedText.text);
+          await msg.reply(JSON.stringify(formattedText, null, 2));
+          // Using a for...of loop instead of forEach for async operations
+          for (const image of images.images || []) {
+            const imageMedia = new MessageMedia(
+              MessageTypes.IMAGE,
+              image.base64,
+              formattedText.nameEnglish
+            );
+            await msg.reply(imageMedia); // Send each image
+          }
+        } catch (error) {
+          logger.error("Error processing media:", error);
+          // Optionally, send an error message back
+          await msg.reply("There was an error processing your media.");
+        }
+
+        return;
+      }
+
       // Fetch the user atomically to avoid concurrency issues
       const user = await User.findOne({ whatsAppNumber: msg.from }).exec();
 
@@ -149,7 +183,7 @@ export default function processTheInComingMessage(client: Client) {
       if (!updatedUser) {
         logger.warn(`Insufficient balance for user: ${msg.from}`);
         await msg.reply(
-          `Insufficient balance. Your current balance is ${user.balance}. Please recharge to continue.`
+          `You have insufficient balance. Your current balance is ${user.balance}. Please recharge your account balance by using the '/recharge' command`
         );
         return;
       }
@@ -186,7 +220,7 @@ export default function processTheInComingMessage(client: Client) {
         );
 
         await msg.reply(mediaNid, undefined, {
-          caption: `Processed NID for ${formattedText.nameEnglish}`,
+          caption: `Processed NID for ${formattedText.nameEnglish} after this Remaining balance: ${updatedUser.balance}`,
         });
 
         logger.info(

@@ -38,14 +38,19 @@ export const homeAnalytics = async (req: Request, res: Response) => {
         $group: {
           _id: null,
           totalBalance: { $sum: "$balance" },
+          totalStockBalance: { $sum: "$stockBalance" },
         },
       },
     ])
-      .then((result) => result[0]?.totalBalance || 0)
+      .then(
+        (result) =>
+          (result[0]?.totalBalance || 0) + (result[0]?.totalStockBalance || 0)
+      )
       .catch((err) => {
-        console.error("Error fetching total balance:", err);
+        console.error("Error fetching combined total:", err);
         return 0;
       });
+
     const totalAddedBalance = await BalanceTransition.aggregate([
       {
         $match: {
