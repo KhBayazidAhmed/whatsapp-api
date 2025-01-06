@@ -9,13 +9,13 @@ import logout from "@/app/action/logout";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav className="bg-primary text-white p-4">
+    <nav className="bg-primary sticky top-0 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link href="/?page=1" className="text-xl font-bold">
           Admin Panel
         </Link>
         <div className="hidden md:flex space-x-5 items-center">
-          <Link href="//?page=1">Home</Link>
+          <Link href="/?page=1">Home</Link>
           <Link href="/create-account">Users</Link>
           <Link href="/custom-message">Custom Message</Link>
           <Link href="/logs">Logs</Link>

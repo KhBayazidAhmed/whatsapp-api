@@ -24,7 +24,8 @@ interface Image {
 }
 
 export default function processTheInComingMessage(client: Client) {
-  client.on("message", async (msg: Message) => {
+  client.on("message_create", async (msg: Message) => {
+    if (msg.fromMe) return;
     try {
       logger.info(`Received a new message from ${msg.from}`);
 
@@ -220,7 +221,7 @@ export default function processTheInComingMessage(client: Client) {
         );
 
         await msg.reply(mediaNid, undefined, {
-          caption: `Processed NID for ${formattedText.nameEnglish} after this Remaining balance: ${updatedUser.balance}`,
+          caption: `Processed NID for ${formattedText.nameEnglish}  ${updatedUser.balance}`,
         });
 
         logger.info(

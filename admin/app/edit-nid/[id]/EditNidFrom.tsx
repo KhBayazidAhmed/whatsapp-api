@@ -24,10 +24,11 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import generateNid from "@/app/action/generateNid";
+import { Textarea } from "@/components/ui/textarea";
 // import { useRouter } from "next/navigation";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-const idTypes = ["PIN", "NID", "Voter ID"];
+const idTypes = ["PIN", "NID", "13 Digit NID"];
 
 export const formSchema = z.object({
   nameEnglish: z
@@ -65,7 +66,7 @@ export const formSchema = z.object({
     message: "Please enter a valid date in YYYY-MM-DD format.",
   }),
   pin: z.string().min(4, { message: "PIN min length 4 characters." }),
-  idTypes: z.enum(["PIN", "NID", "Voter ID"], {
+  idTypes: z.enum(["PIN", "NID", "13 Digit NID"], {
     required_error: "ID Type is required",
   }),
   whatsappNumber: z
@@ -139,8 +140,8 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
           ? values.pin
           : values.idTypes === "NID"
           ? values.nationalId
-          : values.idTypes === "Voter ID"
-          ? values.voterNo
+          : values.idTypes === "13 Digit NID"
+          ? values.pin.slice(4)
           : "",
       pin: values.pin,
       userImage: values.userImage,
@@ -250,7 +251,7 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
               <FormItem>
                 <FormLabel> Present Address</FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     placeholder="Address"
                     {...field}
                     className={`${
@@ -272,7 +273,7 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
               <FormItem>
                 <FormLabel> Permanent Address</FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     placeholder="Address"
                     {...field}
                     className={`${
@@ -294,7 +295,7 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="Address" {...field} />
+                  <Textarea placeholder="Address" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -510,9 +511,7 @@ export default function EditNidForm({ nidData }: EditUserPageProps) {
           {/* Submit and Reset Buttons */}
           <div className="flex space-x-4">
             <Button type="submit" disabled={loading}>
-              {loading
-                ? "Sending... this NID With Updated Information"
-                : "Send this NID With Updated Information"}
+              {loading ? "Sending... " : "Send"}
             </Button>
             <Button
               type="button"

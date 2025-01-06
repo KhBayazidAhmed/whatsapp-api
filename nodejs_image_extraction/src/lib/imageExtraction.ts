@@ -28,7 +28,7 @@ async function extractImageBase64(
     const base64 = await sharp(data, {
       raw: { width, height, channels: channels as 1 | 3 | 4 | 2 },
     })
-      .png({ quality: 60, compressionLevel: 9 })
+      .png({ quality: 80, compressionLevel: 9 })
       .toBuffer()
       .then((buffer) => buffer.toString("base64"));
     return base64;
