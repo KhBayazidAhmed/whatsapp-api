@@ -42,7 +42,6 @@ export default async function page({
     throw new Error("Failed to fetch NID data");
   }
   const data = await response.json();
-  console.log(data);
   if (data.failedAuth) {
     redirect("/login");
   }
