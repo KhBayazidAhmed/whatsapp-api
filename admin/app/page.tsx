@@ -78,7 +78,7 @@ export default async function HomePage({
       <form
         action={async (formData: FormData) => {
           "use server";
-          redirect(`/edit-nid/${formData.get("nidNumber")}`);
+          redirect(`/search/${formData.get("nidNumber")}`);
         }}
         className="mb-4"
       >
@@ -113,7 +113,7 @@ export default async function HomePage({
                 <TableCell>{entry.nameEnglish}</TableCell>
                 <TableCell>{entry.user.whatsAppNumber}</TableCell>
                 <TableCell className="text-right">
-                  <Link href={`/edit-nid/${entry.nationalId}`}>
+                  <Link href={`/edit-nid/${entry._id}`}>
                     <Button variant="default" className="mr-2 mb-2 sm:mb-0">
                       Edit
                     </Button>

@@ -13,7 +13,10 @@ export default async function searchNid(req: Request, res: Response) {
     }
 
     // Search the database for the nationalId field
-    const nid = await NIDData.findOne({ _id: searchQuery }).populate({
+    const nid = await NIDData.find(
+      { nationalId: searchQuery },
+      { nationalId: 1, nameEnglish: 1, _id: 1 }
+    ).populate({
       path: "user",
       select: "whatsAppNumber",
     });
@@ -26,7 +29,6 @@ export default async function searchNid(req: Request, res: Response) {
         .json({ error: "No NID found with the given national ID." });
       return;
     }
-
     // Send the search results
     res.json(nid);
   } catch (error: any) {
